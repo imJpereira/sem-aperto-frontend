@@ -21,3 +21,13 @@ main {
   flex: 1;
   margin: 5rem;
 }
+
+@media (max-width: 1200px) {
+  * {
+    font-size: 12px;
+  }
+
+  .tab-container {
+    margin: 2rem 1rem;
+  }
+}
