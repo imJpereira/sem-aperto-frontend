@@ -8,13 +8,12 @@ const isActive = (path) => {
 }
 
 const toggleMenuHamburger = () => {
-  const mainMenu = document.getElementById("main-menu");
   const menuHamburger = document.getElementById("menu-hamburguer");
+  if (getComputedStyle(menuHamburger).display === "none") return;
   
-  if (menuHamburger.style.display === "none") return;
-
+  const mainMenu = document.getElementById("main-menu");
   
-  if (mainMenu.style.display === "none" || mainMenu.style.display === "") {
+  if (getComputedStyle(mainMenu).display === "none" || getComputedStyle(mainMenu).display === "") {
     mainMenu.style.display = "block";
     return;
   }
@@ -76,7 +75,7 @@ const toggleMenuHamburger = () => {
 
   & a {
     font-size: 20px;
-    color: var(--vt-c-text-dark-2);
+    color: rgb(218, 218, 218);
     text-decoration: none;
   }
 }

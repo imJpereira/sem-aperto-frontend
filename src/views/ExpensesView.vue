@@ -25,9 +25,9 @@ const createExpense = async (event) => {
 
   try {
     await axios.post('http://192.168.100.17:8080/expenses/create', {
-      category_fk: null,
-      expense_value: expenseValue.value,
-      expense_date: expenseDate.value,
+      category: null,
+      value: expenseValue.value,
+      expenseDate: expenseDate.value,
       description: expenseDescription.value,
     })
   } catch (e) {
@@ -65,10 +65,12 @@ const deleteExpense = async (expenseId) => {
 onMounted(showExpenses)
 </script>
 
-<template>
-  <h1>Despesas</h1>
+<template >
+  <header>
+    <h1>Despesas</h1>
+  </header>
 
-  <section class="form-container">
+  <section class="form-container tab-content" >
     <form @submit.prevent="createExpense">
       <div class="mb-3 date">
         <label for="expense_date">Data</label>
@@ -122,8 +124,8 @@ onMounted(showExpenses)
     </form>
   </section>
 
-  <section class="expenses-container">
-    <div class="grid border-bottom">
+  <section class="tab-content">
+    <div class="grid border-bottom pb-2">
       <p class="caption">Descrição</p>
       <p class="caption">Valor</p>
       <p class="caption">Categoria</p>
@@ -131,29 +133,24 @@ onMounted(showExpenses)
     </div>
     <div
       v-for="expense in expenses"
-      @click="deleteExpense(expense.expense_id)"
       :key="expense.id"
-      class="grid rounded border-bottom"
-    >
+      class="grid border-bottom pb-3 pt-3"
+    > 
       <p>{{ expense.description }}</p>
-      <p>R$ {{ expense.expense_value }}</p>
-      <p>{{ expense.category_fk }}</p>
-      <p>{{ formatDate(expense.expense_date) }}</p>
+      <p>R$ {{ expense.value }}</p>
+      <p>{{ expense.category }}</p>
+      <p>{{ formatDate(expense.expenseDate) }}</p>
+      <div class="d-flex justify-content-end">
+        <img 
+        @click="deleteExpense(expense.expenseId)" 
+        class="delete-expense-img" 
+        src="../assets/icons/delete-reg-icon.svg" alt="delete" width="30px" height="30px">
+      </div>
     </div>
   </section>
 </template>
 
 <style scoped>
-section {
-  padding: 2rem 5rem;
-  /* background: #000; */
-}
-
-.form-container form {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0 1rem;
-}
 
 .form-container form > :nth-child(1),
 .form-container form > :nth-child(2) {
@@ -169,17 +166,26 @@ section {
 
 .grid {
   display: grid;
-  grid-template-columns: 2fr 1fr 1fr 0.5fr;
-  gap: 0.5rem;
+  grid-template-columns: 2fr 1fr 1fr 0.5fr 0.3fr;
+  align-items: center;
+
 
   & p {
+    margin: 0;
     font-size: 20px;
-    padding: 0.5rem;
   }
 
   & .caption {
     font-size: 16px;
-    padding: 0 0.5;
+  }
+}
+
+.delete-expense-img {
+  cursor: pointer;
+  transition: all 300ms ease;
+
+  &:hover {
+    transform: scale(1.1);
   }
 }
 
@@ -194,7 +200,7 @@ section {
   }
 
   .grid {
-    grid-template-columns: 2fr 1fr 1fr 1fr;
+    grid-template-columns: 2fr 1fr 1fr 1fr 0.5fr;
 
     & p {
       font-size: 14px;

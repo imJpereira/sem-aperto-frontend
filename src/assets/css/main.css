@@ -1,5 +1,10 @@
 @import './base.css';
 
+* {
+  margin: 0;
+  padding: 0;
+}
+
 a {
   text-decoration: none;
 }
@@ -16,10 +21,22 @@ main {
   min-height: 100vh;
 }
 
+form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 1rem;
+}
+
 .tab-container {
+  position: relative;
   overflow-y: auto;
   flex: 1;
-  margin: 5rem;
+  margin: 3rem;
+}
+
+.tab-content {
+  padding: 2rem 3rem;
+  /* background: #000; */
 }
 
 @media (max-width: 1200px) {
