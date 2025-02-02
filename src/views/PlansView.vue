@@ -28,7 +28,12 @@ const showPlanDetail = (plan) => {
               });
 }       
 
-const toggleVisibility = (visibility) => {
+const handleModalClose = () => {
+  toggleVisibility(false);
+  showPlans();
+}
+
+const  toggleVisibility = (visibility) => {
   visible.value = visibility;
 }
 
@@ -70,7 +75,7 @@ onUnmounted(() => {
 
   </section>
 
-  <NewPlanModal v-if="visible" ref="modal" @close="toggleVisibility(false); showPlans();"/>
+  <NewPlanModal v-if="visible" ref="modal" @close="handleModalClose"/>
 </template>
 
 <style scoped>
@@ -88,7 +93,7 @@ onUnmounted(() => {
   width: 21rem;
   color: var(--vt-c-white);
   border-radius: 10px;
-  background-color: rgba(20, 61, 85, 0.884);
+  background-color: var(--plan-bg);
   cursor: pointer;
 }
 
