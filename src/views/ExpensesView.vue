@@ -1,16 +1,21 @@
 <script setup>
 import axios from 'axios'
 import { onMounted, ref } from 'vue'
-import { formatDate } from '@/functions/functions'
+import { formatDate, getCategoriesByPlanId } from '@/functions/functions'
+import { usePlanStore } from '@/stores/planStore'
+
+const planStore = usePlanStore()
 
 const defaultDate = new Date().toISOString().split('T')[0]
 
+const categories = ref([])
 const expenses = ref([])
 
-const expenseCategory = null
 const expenseValue = ref(null)
 const expenseDate = ref(defaultDate)
 const expenseDescription = ref(null)
+const expensePlan = ref(null)
+const expenseCategory = ref(null)
 
 const createExpense = async (event) => {
   event.preventDefault()
@@ -27,14 +32,14 @@ const createExpense = async (event) => {
 
   try {
     await axios.post('http://192.168.100.17:8080/expenses/create', {
-      category: null,
+      category: expenseCategory.value,
       value: expenseValue.value,
       expenseDate: expenseDate.value,
       description: expenseDescription.value,
     })
   } catch (e) {
     //fazer componente de mensagem de erro
-    alert(e)
+    alert(e.message)
     return
   }
 
@@ -59,9 +64,13 @@ const deleteExpense = async (expenseId) => {
   if (response.status == 200) {
     alert('Excluído com sucesso!')
     showExpenses()
-    return;
+    return
   }
   alert('Erro ao excluir registro!')
+}
+
+const handlePlanBlur = async () => {
+  categories.value = await getCategoriesByPlanId(expensePlan.value);
 }
 
 onMounted(showExpenses)
@@ -97,16 +106,34 @@ onMounted(showExpenses)
         />
       </div>
 
+      <div class="mb-3 plan">
+        <label for="expense_plan">Plano</label>
+        <select 
+          v-model="expensePlan" 
+          id="expense_plan" 
+          name="expense_plan" 
+          class="form-select"
+          @blur="handlePlanBlur()"
+          @change="expenseCategory = ''"
+          >
+          <option v-for="plan in planStore.plans" :key="plan.id" :value="plan.planId">
+            {{ plan.title }}
+          </option>
+        </select>
+      </div>
+
       <div class="mb-3 category">
         <label for="expense_category">Categoria</label>
-        <input
+        <select
           v-model="expenseCategory"
           id="expense_category"
           name="expense_category"
-          type="text"
-          disabled
-          class="form-control"
-        />
+          class="form-select" 
+          >
+          <option v-for="category in categories" :key="category.id" :value="category.categoryId">
+            {{ category.description }}
+          </option>
+        </select>
       </div>
 
       <div class="mb-3 description">
@@ -153,15 +180,15 @@ onMounted(showExpenses)
 </template>
 
 <style scoped>
+
 .form-container form > :nth-child(1),
-.form-container form > :nth-child(2) {
+.form-container form > :nth-child(2),
+.form-container form > :nth-child(3),
+.form-container form > :nth-child(4) {
   flex-grow: 1;
 }
-.form-container form > :nth-child(3) {
-  flex-grow: 4;
-}
 
-.form-container form > :nth-child(4) {
+.form-container form > :nth-child(5) {
   width: 100%;
 }
 

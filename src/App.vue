@@ -1,7 +1,10 @@
 <script setup>
+import { onMounted } from 'vue';
 import { RouterLink, RouterView, useRoute } from 'vue-router'
+import { usePlanStore } from './stores/planStore';
 
 const route = useRoute();
+const planStore = usePlanStore();
 
 const isActive = (path) => {
   return path === route.path;
@@ -19,6 +22,10 @@ const toggleMenuHamburger = () => {
   }
   mainMenu.style.display = "none";
 }
+
+onMounted(async () => {
+  await planStore.getPlans();
+});
 
 </script>
 

@@ -1,24 +1,20 @@
 <script setup>
 import NewPlanModal from '@/components/NewPlanModal.vue';
-import axios from 'axios';
+// import axios from 'axios';
 import { onMounted, onUnmounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
+import { usePlanStore } from '@/stores/planStore';
 
 const router = useRouter();
+const planStore = usePlanStore();
 const visible = ref(false);
 const modal = ref(null);
-const plans = ref([]);
-
-const showPlans = async () => {
-  plans.value = await axios("http://192.168.100.17:8080/plans/all");
-  plans.value = plans.value.data;
-}
 
 const handleDocumentClick = (e) => {
   if (e.target.classList.contains('btn-success')) return;
 
   const modalElement = modal.value?.$el;
-  if (!modalElement.contains(e.target)) toggleVisibility(false);
+  if (!modalElement?.contains(e.target)) toggleVisibility(false);
 }
 
 const showPlanDetail = (plan) => {
@@ -28,18 +24,17 @@ const showPlanDetail = (plan) => {
               });
 }       
 
-const handleModalClose = () => {
+const handleModalClose = async () => {
   toggleVisibility(false);
-  showPlans();
+  planStore.getPlans();
 }
 
 const  toggleVisibility = (visibility) => {
   visible.value = visibility;
 }
 
-onMounted(() => {
+onMounted(async () => {
   document.addEventListener('click', handleDocumentClick);
-  showPlans();
 });
 
 onUnmounted(() => {
@@ -60,7 +55,7 @@ onUnmounted(() => {
     <div class="plans-container py-3 d-flex flex-wrap" >
       <div 
         class="plan d-flex align-items-center p-4" 
-        v-for="plan in plans" 
+        v-for="plan in planStore.plans" 
         :key="plan.id"
          @click="showPlanDetail(plan)"
       >

@@ -1,12 +1,14 @@
 <script setup>
 import NewCategoryModal from '@/components/NewCategoryModal.vue'
-import { formatDate } from '@/functions/functions'
+import { formatDate, getCategoriesByPlanId } from '@/functions/functions'
 import axios from 'axios'
 import { onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { usePlanStore } from '@/stores/planStore'
 
 const route = useRoute()
 const router = useRouter()
+const planStore = usePlanStore();
 
 const plan = ref([])
 const categories = ref([])
@@ -44,16 +46,12 @@ const deletePlan = (id) => {
   }
 
   alert('plano excluído com sucesso!')
-  redirectToPlanRoute()
+  planStore.getPlans();
+  redirectToPlanRoute();
 }
 
 const showCategories = async () => {
-  try {
-    categories.value = await axios(`http://192.168.100.17:8080/categories/plan/${route.params.id}`)
-    categories.value = categories.value.data;
-  } catch (e) {
-    console.log(e)
-  }
+  categories.value = await getCategoriesByPlanId(route.params.id);
 }
 
 const deleteCategory = async (categoryId) => {
