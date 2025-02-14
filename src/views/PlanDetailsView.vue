@@ -1,6 +1,6 @@
 <script setup>
 import NewCategoryModal from '@/components/NewCategoryModal.vue'
-import { formatDate, getCategoriesByPlanId } from '@/functions/functions'
+import { formatDate, formatValue, getCategoriesByPlanId } from '@/functions/functions'
 import axios from 'axios'
 import { onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
@@ -10,14 +10,18 @@ const route = useRoute()
 const router = useRouter()
 const planStore = usePlanStore();
 
-const plan = ref([])
-const categories = ref([])
-const categoryExpenses = ref([])
 
-const titleEditable = ref(false)
-const capitalEditable = ref(false)
-const startDateEditable = ref(false)
-const finalDateEditable = ref(false)
+const plan = ref([])
+
+const planTitle = ref("");
+const planInitialCapital = ref("");
+const planStartDate = ref("");
+const planFinalDate = ref("");
+
+
+const categories = ref([])
+const categoryTotals = ref([])
+const categoryExpenses = ref([])
 
 const modalVisible = ref(false);
 
@@ -51,7 +55,21 @@ const deletePlan = (id) => {
 }
 
 const showCategories = async () => {
-  categories.value = await getCategoriesByPlanId(route.params.id);
+  try {
+    categories.value = await getCategoriesByPlanId(route.params.id);
+    getCategoryTotals();
+  } catch (e) {
+    console.log(e);
+  }
+}
+
+const getCategoryTotals = async () => {
+  try {
+    categoryTotals.value = await axios.get(`http://192.168.100.17:8080/categories/${plan.value.planId}/totals`)
+    categoryTotals.value = categoryTotals.value.data;
+  } catch (e) {
+    console.log(e);
+  }
 }
 
 const deleteCategory = async (categoryId) => {
@@ -89,6 +107,55 @@ const findPlan = async () => {
   }
 }
 
+const updatePlanTitle = async () => {
+  if (plan.value.title == planTitle.value) return; 
+
+  try {
+    await axios.patch(`http://192.168.100.17:8080/plans/${route.params.id}/update`, {
+      title : plan.value.title
+    });
+  } catch (e) {
+    console.log(e);
+  }
+}
+
+const updatePlanStartDate = async () => {
+  if (plan.value.startDate == planStartDate.value) return; 
+
+  try {
+    await axios.patch(`http://192.168.100.17:8080/plans/${route.params.id}/update`, {
+      startDate: plan.value.startDate,
+    });
+  } catch (e) {
+    console.log(e);
+  }
+};
+
+const updatePlanFinalDate = async () => {
+  if (plan.value.finalDate == planFinalDate.value) return; 
+
+  try {
+    await axios.patch(`http://192.168.100.17:8080/plans/${route.params.id}/update`, {
+      finalDate: plan.value.finalDate,
+    });
+  } catch (e) {
+    console.log(e);
+  }
+};
+
+const updatePlanInitialCapital = async () => {
+  if (plan.value.initialCapital == planInitialCapital.value) return; 
+
+  try {
+    await axios.patch(`http://192.168.100.17:8080/plans/${route.params.id}/update`, {
+      initialCapital: plan.value.initialCapital,
+    });
+  } catch (e) {
+    console.log(e);
+  }
+};
+
+
 onMounted(() => {
   findPlan();
   showCategories();
@@ -109,21 +176,8 @@ onMounted(() => {
           v-model="plan.title"
           class="no-input h1-input"
           type="text"
-          :disabled="!titleEditable"
-        />
-        <img
-          v-if="!titleEditable"
-          class="input-icon edit"
-          @click="titleEditable = !titleEditable"
-          src="../assets/icons/edit.svg"
-          alt="edit"
-        />
-        <img
-          v-else
-          class="input-icon confirm"
-          @click="titleEditable = !titleEditable"
-          src="../assets/icons/confirm.svg"
-          alt="checkmark--v1"
+          @focus="planTitle = plan.title"
+          @blur="updatePlanTitle()"
         />
       </div>
       <button @click="deletePlan(plan.planId)" class="btn btn-danger btn-large">
@@ -139,21 +193,8 @@ onMounted(() => {
             v-model="plan.initialCapital"
             class="no-input"
             type="text"
-            :disabled="!capitalEditable"
-          />
-          <img
-            v-if="!capitalEditable"
-            class="input-icon edit"
-            @click="capitalEditable = !capitalEditable"
-            src="../assets/icons/edit.svg"
-            alt="edit"
-          />
-          <img
-            v-else
-            class="input-icon confirm"
-            @click="capitalEditable = !capitalEditable"
-            src="../assets/icons/confirm.svg"
-            alt="checkmark--v1"
+            @focus="planInitialCapital = plan.initialCapital"
+            @blur="updatePlanInitialCapital()"
           />
         </div>
       </div>
@@ -165,21 +206,8 @@ onMounted(() => {
             v-model="plan.startDate"
             class="no-input"
             type="date"
-            :disabled="!startDateEditable"
-          />
-          <img
-            v-if="!startDateEditable"
-            class="input-icon edit"
-            @click="startDateEditable = !startDateEditable"
-            src="../assets/icons/edit.svg"
-            alt="edit"
-          />
-          <img
-            v-else
-            class="input-icon confirm"
-            @click="startDateEditable = !startDateEditable"
-            src="../assets/icons/confirm.svg"
-            alt="checkmark--v1"
+            @focus="planStartDate = plan.startDate"
+            @blur="updatePlanStartDate()"
           />
         </div>
       </div>
@@ -191,21 +219,8 @@ onMounted(() => {
             v-model="plan.finalDate"
             class="no-input"
             type="date"
-            :disabled="!finalDateEditable"
-          />
-          <img
-            v-if="!finalDateEditable"
-            class="input-icon edit"
-            @click="finalDateEditable = !finalDateEditable"
-            src="../assets/icons/edit.svg"
-            alt="edit"
-          />
-          <img
-            v-if="finalDateEditable"
-            class="input-icon confirm"
-            @click="finalDateEditable = !finalDateEditable"
-            src="../assets/icons/confirm.svg"
-            alt="checkmark--v1"
+            @focus="planFinalDate = plan.finalDate"
+            @blur="updatePlanFinalDate()"
           />
         </div>
       </div>
@@ -223,26 +238,34 @@ onMounted(() => {
           <p class="caption">Valor Gasto</p>
           <p class="caption">Saldo</p>
         </div>
-        <div
-          v-for="category in categories"
-          :key="category.id"
-          class="category grid border-bottom py-3"
-          @click="showCategoryExpenses(category.categoryId)"
-        >
-          <p>{{ category.description }}</p>
-          <p>{{ category.targetValue }}</p>
-          <p>{{ category.actualValue }}</p>
-          <p>{{ category.targetValue - category.actualValue }}</p>
-          <div class="d-flex justify-content-end">
-            <img
-              @click="deleteCategory(category.categoryId)"
-              class="delete-category-img"
-              src="../assets/icons/delete-reg-icon.svg"
-              alt="delete"
-              width="30px"
-              height="30px"
-            />
+        <div>
+          <div
+            v-for="category in categories"
+            :key="category.id"
+            class="category grid border-bottom py-2"
+            @click="showCategoryExpenses(category.categoryId)"
+          >
+              <p>{{ category.description }}</p>
+              <p>{{ formatValue(category.targetValue) }}</p>
+              <p>{{ formatValue(category.actualValue) }}</p>
+              <p>{{ formatValue(category.targetValue - category.actualValue) }}</p>
+              <div class="d-flex justify-content-end">
+                <img
+                  @click="deleteCategory(category.categoryId)"
+                  class="delete-category-img"
+                  src="../assets/icons/delete-reg-icon.svg"
+                  alt="delete"
+                  width="30px"
+                  height="30px"
+                />
+              </div>
           </div>
+        </div>
+        <div class="grid pb-3 border-top border-dark">
+            <p><b>Total</b></p>
+            <p><b>{{ formatValue(categoryTotals.targetValueSum) }}</b></p>
+            <p><b>{{ formatValue(categoryTotals.actualValueSum) }}</b></p>
+            <p><b>{{ formatValue(categoryTotals.balance) }}</b></p>
         </div>
       </section>
       <section class="category-expenses">
@@ -254,11 +277,11 @@ onMounted(() => {
         <div
           v-for="categoryExpense in categoryExpenses"
           :key="categoryExpense.id"
-          class="expenses-grid grid border-bottom py-3"
+          class="expenses-grid grid border-bottom py-2"
         >
           <p>{{ categoryExpense.description }}</p>
           <p>{{ formatDate(categoryExpense.expenseDate) }}</p>
-          <p>{{ categoryExpense.value }}</p>
+          <p>{{ formatValue(categoryExpense.value) }}</p>
         </div>
       </section>
     </div>
@@ -297,11 +320,19 @@ header {
 .no-input {
   background: none;
   border: none;
-  border-bottom: 1px solid rgb(221, 221, 221);
+  /* border-bottom: 1px solid rgb(221, 221, 221); */
   padding: 0.5rem;
   /* color: white; */
   outline: none;
   font-weight: 500;
+}
+
+.no-input:hover {
+  background-color: rgb(250, 250, 250);
+}
+
+.no-input:focus {
+  background-color: rgb(250, 250, 250);
 }
 
 .h1-input {
@@ -355,7 +386,7 @@ header {
 
 .categories {
   flex-grow: 1;
-  background-color: rgb(238, 238, 238);
+  background-color: rgb(241, 241, 241);
   padding: 1rem;
   border-radius: 10px;
 }
@@ -372,7 +403,7 @@ header {
 }
 
 .category:hover {
-  filter: brightness(97%);
+  background-color: rgb(236, 236, 236);
   cursor: pointer;
 }
 

@@ -1,7 +1,7 @@
 <script setup>
 import axios from 'axios'
 import { onMounted, ref } from 'vue'
-import { formatDate, getCategoriesByPlanId } from '@/functions/functions'
+import { formatDate, formatValue, getCategoriesByPlanId } from '@/functions/functions'
 import { usePlanStore } from '@/stores/planStore'
 
 const planStore = usePlanStore()
@@ -160,9 +160,9 @@ onMounted(showExpenses)
       <p class="caption">Categoria</p>
       <p class="caption">Data</p>
     </div>
-    <div v-for="expense in expenses" :key="expense.id" class="grid border-bottom py-3">
+    <div v-for="expense in expenses" :key="expense.id" class="grid border-bottom py-2">
       <p>{{ expense.description }}</p>
-      <p>R$ {{ expense.value }}</p>
+      <p>{{ formatValue(expense.value) }}</p>
       <p>{{ expense.category?.description }}</p>
       <p>{{ formatDate(expense.expenseDate) }}</p>
       <div class="d-flex justify-content-end">
