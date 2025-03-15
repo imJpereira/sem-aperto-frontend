@@ -19,9 +19,9 @@ const planInitialCapital = ref("");
 const planStartDate = ref("");
 const planFinalDate = ref("");
 
+const categoryTotals = {}
 
 const categories = ref([])
-const categoryTotals = ref([])
 const categoryExpenses = ref([])
 
 const modalVisible = ref(false);
@@ -62,23 +62,16 @@ const deletePlan = (id) => {
 const showCategories = async () => {
   try {
     categories.value = await getCategoriesByPlanId(route.params.id);
-    await getCategoryTotals();
+    getCategoryTotals();
   } catch (e) {
     console.log(e);
   }
 }
 
-const getCategoryTotals = async () => {
-  try {
-    categoryTotals.value = await axios.get(`http://192.168.100.17:8080/categories/${plan.value.planId}/totals`, {
-      headers: {
-        Authorization: `Bearer ${loginStore.jsonWebToken}`
-      }
-    })
-    categoryTotals.value = categoryTotals.value.data;
-  } catch (e) {
-    console.log(e);
-  }
+const getCategoryTotals =  () => {
+  categoryTotals.targetValue = categories.value.reduce((sum, category) => sum + Number(category.targetValue), 0);
+  categoryTotals.actualValue = categories.value.reduce((sum, category) => sum + Number(category.actualValue), 0);
+
 }
 
 const deleteCategory = async (categoryId) => {
@@ -305,9 +298,9 @@ onMounted(() => {
         </div>
         <div class="grid pb-3 border-top border-dark">
             <p><b>Total</b></p>
-            <p><b>{{ formatValue(categoryTotals.targetValueSum) }}</b></p>
-            <p><b>{{ formatValue(categoryTotals.actualValueSum) }}</b></p>
-            <p><b>{{ formatValue(categoryTotals.balance) }}</b></p>
+            <p><b>{{ formatValue(categoryTotals.targetValue) }}</b></p>
+            <p><b>{{ formatValue(categoryTotals.actualValue) }}</b></p>
+            <p><b>{{ formatValue(categoryTotals.targetValue - categoryTotals.actualValue) }}</b></p>
         </div>
       </section>
       <section class="category-expenses">
