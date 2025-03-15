@@ -1,10 +1,7 @@
 <script setup>
-import { onMounted } from 'vue';
 import { RouterLink, RouterView, useRoute } from 'vue-router'
-import { usePlanStore } from './stores/planStore';
 
 const route = useRoute();
-const planStore = usePlanStore();
 
 const isActive = (path) => {
   return path === route.path;
@@ -23,14 +20,10 @@ const toggleMenuHamburger = () => {
   mainMenu.style.display = "none";
 }
 
-onMounted(async () => {
-  await planStore.getPlans();
-});
-
 </script>
 
 <template>
-  <main>
+  <main v-if="(route.path !== '/signin') && (route.path !== '/signup')">
     <button id="menu-hamburguer" @click="toggleMenuHamburger()" class="hamburger">☰</button>
 
     <aside id="main-menu" class="main-menu">
@@ -40,12 +33,10 @@ onMounted(async () => {
       <nav class="main-menu-content">
         <ul>
           <li @click="toggleMenuHamburger()" :class="{ menuActive: isActive('/despesas') }">
-            <RouterLink to="/despesas" >Despesas</RouterLink
-            >
+            <RouterLink to="/despesas" >Despesas</RouterLink>
           </li>
           <li @click="toggleMenuHamburger()" :class="{ menuActive: isActive('/planos') }">
-            <RouterLink to="/planos" 
-              >Planos</RouterLink
+            <RouterLink to="/planos" >Planos</RouterLink
             >
           </li>
         </ul>
@@ -55,8 +46,12 @@ onMounted(async () => {
     <div class="tab-container">
       <RouterView />
     </div>
-
   </main>
+
+  <div v-if="(route.path === '/signin') || (route.path === '/signup')">
+      <RouterView />
+  </div>
+
 </template>
 
 <style scoped>

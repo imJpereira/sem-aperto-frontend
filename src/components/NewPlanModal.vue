@@ -3,9 +3,12 @@ import axios from 'axios';
 import { ref, defineEmits } from 'vue';
 import BaseModal from './BaseModal.vue';
 import { useModal } from '@/composables/useModal';
+import { useLoginStore } from '@/stores/loginStore';
 
 const emit = defineEmits(["close"]);
 const { closeModal } = useModal(emit);
+
+const loginStore = useLoginStore();
 
 const title = ref("");
 const startDate = ref("");
@@ -32,6 +35,11 @@ const planPostRequest = async () => {
             startDate : startDate.value,
             finalDate : finalDate.value,
             initialCapital : capital.value
+        },
+        {
+            headers: {
+                Authorization: `Bearer ${loginStore.jsonWebToken}`
+            }
         });
         return "Plano criado com sucesso";
     } catch(e) {

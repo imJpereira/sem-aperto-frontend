@@ -3,6 +3,9 @@ import { ref } from 'vue';
 import BaseModal from './BaseModal.vue';
 import { useModal } from '@/composables/useModal';
 import axios from 'axios';
+import { useLoginStore } from '@/stores/loginStore';
+
+const loginStore = useLoginStore();
 
 const description = ref("");
 const targetValue = ref("");
@@ -32,7 +35,11 @@ const categoryPostRequest = async () => {
         await axios.post(`http://192.168.100.17:8080/categories/create/plan/${props.planId}`, {
             description: description.value,
             targetValue: targetValue.value
-        })
+        }, {
+            headers: {
+                Authorization: `Bearer ${loginStore.jsonWebToken}`
+            }
+        });
         return "Categoria criada com sucesso"
     } catch(e) {
         console.log(e);
@@ -52,7 +59,7 @@ const categoryPostRequest = async () => {
             </div>
             <div>
                 <label for="">Meta</label>
-                <input v-model="targetValue" class="form-control" type="number">
+                <input v-model="targetValue" class="form-control" type="text">
             </div>
             <div class="d-flex align-items-center justify-content-center">
                 <button class="btn btn-dark btn-lg" type="submit" :disabled="!isFormValid()">Criar</button>

@@ -1,3 +1,4 @@
+import { useLoginStore } from "@/stores/loginStore";
 import axios from "axios";
 
 export const formatDate = (date) => {
@@ -10,8 +11,14 @@ export const formatValue = (value) => {
 }
   
 export const getCategoriesByPlanId = async (planId) => {
+    const loginStore = useLoginStore();
+    
     try {
-        let categories = await axios(`http://192.168.100.17:8080/categories/plan/${planId}`)
+        let categories = await axios(`http://192.168.100.17:8080/categories/plan/${planId}`, {
+            headers: {
+                Authorization: `Bearer ${loginStore.jsonWebToken}`
+            }
+        })
         return categories.data;
         
     } catch (e) {

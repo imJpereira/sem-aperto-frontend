@@ -3,8 +3,10 @@ import axios from 'axios'
 import { onMounted, ref } from 'vue'
 import { formatDate, formatValue, getCategoriesByPlanId } from '@/functions/functions'
 import { usePlanStore } from '@/stores/planStore'
+import { useLoginStore } from '@/stores/loginStore'
 
 const planStore = usePlanStore()
+const loginStore = useLoginStore();
 
 const defaultDate = new Date().toISOString().split('T')[0]
 
@@ -32,10 +34,16 @@ const createExpense = async (event) => {
 
   try {
     await axios.post('http://192.168.100.17:8080/expenses/create', {
+      plan: expensePlan.value,
       category: expenseCategory.value,
       value: expenseValue.value,
       expenseDate: expenseDate.value,
       description: expenseDescription.value,
+    },
+    {
+      headers: {
+        Authorization: `Bearer ${loginStore.jsonWebToken}`
+      }
     })
   } catch (e) {
     //fazer componente de mensagem de erro
@@ -52,7 +60,11 @@ const createExpense = async (event) => {
 }
 
 const showExpenses = async () => {
-  expenses.value = await axios.get('http://192.168.100.17:8080/expenses/all')
+  expenses.value = await axios.get('http://192.168.100.17:8080/expenses/all',{
+    headers: {
+      Authorization: `Bearer ${loginStore.jsonWebToken}`
+    }
+  })
   expenses.value = expenses.value.data
 }
 
@@ -60,7 +72,11 @@ const deleteExpense = async (expenseId) => {
   const userResponse = confirm('Tem certeza que deseja excluír essa despesa? ')
   if (!userResponse) return
 
-  const response = await axios.delete(`http://192.168.100.17:8080/expenses/delete/${expenseId}`)
+  const response = await axios.delete(`http://192.168.100.17:8080/expenses/delete/${expenseId}`,{
+    headers: {
+      Authorization: `Bearer ${loginStore.jsonWebToken}`
+    }
+  })
   if (response.status == 200) {
     alert('Excluído com sucesso!')
     showExpenses()

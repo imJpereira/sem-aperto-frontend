@@ -35,6 +35,7 @@ const  toggleVisibility = (visibility) => {
 
 onMounted(async () => {
   document.addEventListener('click', handleDocumentClick);
+  await planStore.getPlans();
 });
 
 onUnmounted(() => {

@@ -5,11 +5,12 @@ import axios from 'axios'
 import { onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { usePlanStore } from '@/stores/planStore'
+import { useLoginStore } from '@/stores/loginStore'
 
 const route = useRoute()
 const router = useRouter()
 const planStore = usePlanStore();
-
+const loginStore = useLoginStore();
 
 const plan = ref([])
 
@@ -43,7 +44,11 @@ const deletePlan = (id) => {
   if (!userResponse) return
 
   try {
-    axios.delete(`http://192.168.100.17:8080/plans/delete/${id}`)
+    axios.delete(`http://192.168.100.17:8080/plans/delete/${id}`, {
+      headers: {
+        Authorization: `Bearer ${loginStore.jsonWebToken}`
+      }
+    })
   } catch (e) {
     console.log(e)
     return
@@ -57,7 +62,7 @@ const deletePlan = (id) => {
 const showCategories = async () => {
   try {
     categories.value = await getCategoriesByPlanId(route.params.id);
-    getCategoryTotals();
+    await getCategoryTotals();
   } catch (e) {
     console.log(e);
   }
@@ -65,7 +70,11 @@ const showCategories = async () => {
 
 const getCategoryTotals = async () => {
   try {
-    categoryTotals.value = await axios.get(`http://192.168.100.17:8080/categories/${plan.value.planId}/totals`)
+    categoryTotals.value = await axios.get(`http://192.168.100.17:8080/categories/${plan.value.planId}/totals`, {
+      headers: {
+        Authorization: `Bearer ${loginStore.jsonWebToken}`
+      }
+    })
     categoryTotals.value = categoryTotals.value.data;
   } catch (e) {
     console.log(e);
@@ -77,7 +86,11 @@ const deleteCategory = async (categoryId) => {
   if (!userResponse) return
   
   try {
-    await axios.delete(`http://192.168.100.17:8080/categories/delete/${categoryId}`)
+    await axios.delete(`http://192.168.100.17:8080/categories/delete/${categoryId}`, {
+      headers: {
+        Authorization: `Bearer ${loginStore.jsonWebToken}`
+      }
+    })
     alert("deletado com sucesso");
     showCategories();
     return;
@@ -90,7 +103,11 @@ const deleteCategory = async (categoryId) => {
 const showCategoryExpenses = async (categoryId) => {
   try {
     categoryExpenses.value = await axios(
-      `http://192.168.100.17:8080/expenses/category/${categoryId}`,
+      `http://192.168.100.17:8080/expenses/category/${categoryId}`,{
+        headers : {
+          Authorization: `Bearer ${loginStore.jsonWebToken}`
+        }
+      }
     )
     categoryExpenses.value = categoryExpenses.value.data
   } catch (e) {
@@ -100,7 +117,11 @@ const showCategoryExpenses = async (categoryId) => {
 
 const findPlan = async () => {
   try {
-    plan.value = await axios(`http://192.168.100.17:8080/plans/${route.params.id}`)
+    plan.value = await axios(`http://192.168.100.17:8080/plans/${route.params.id}`, {
+      headers: {
+        Authorization: `Bearer ${loginStore.jsonWebToken}`
+      }
+    })
     plan.value = plan.value.data
   } catch (e) {
     console.log(e)
@@ -113,6 +134,11 @@ const updatePlanTitle = async () => {
   try {
     await axios.patch(`http://192.168.100.17:8080/plans/${route.params.id}/update`, {
       title : plan.value.title
+    }, 
+    {
+      headers: {
+        Authorization: `Bearer ${loginStore.jsonWebToken}`
+      }    
     });
   } catch (e) {
     console.log(e);
@@ -125,6 +151,11 @@ const updatePlanStartDate = async () => {
   try {
     await axios.patch(`http://192.168.100.17:8080/plans/${route.params.id}/update`, {
       startDate: plan.value.startDate,
+    }, 
+    {
+      headers: {
+        Authorization: `Bearer ${loginStore.jsonWebToken}`
+      }
     });
   } catch (e) {
     console.log(e);
@@ -137,6 +168,11 @@ const updatePlanFinalDate = async () => {
   try {
     await axios.patch(`http://192.168.100.17:8080/plans/${route.params.id}/update`, {
       finalDate: plan.value.finalDate,
+    },
+    {
+      headers: {
+        Authorization: `Bearer ${loginStore.jsonWebToken}`
+      }
     });
   } catch (e) {
     console.log(e);
@@ -144,11 +180,17 @@ const updatePlanFinalDate = async () => {
 };
 
 const updatePlanInitialCapital = async () => {
+  console.log(plan.value.initialCapital);
   if (plan.value.initialCapital == planInitialCapital.value) return; 
 
   try {
     await axios.patch(`http://192.168.100.17:8080/plans/${route.params.id}/update`, {
       initialCapital: plan.value.initialCapital,
+    },
+    {
+      headers: {
+        Authorization: `Bearer ${loginStore.jsonWebToken}`
+      }
     });
   } catch (e) {
     console.log(e);
