@@ -23,7 +23,7 @@ const toggleMenuHamburger = () => {
 </script>
 
 <template>
-  <main v-if="(route.path !== '/signin') && (route.path !== '/signup')">
+  <main v-if="!['SignIn','SignUp','NotFound'].includes(route.name)">
     <button id="menu-hamburguer" @click="toggleMenuHamburger()" class="hamburger">☰</button>
 
     <aside id="main-menu" class="main-menu">
@@ -48,7 +48,7 @@ const toggleMenuHamburger = () => {
     </div>
   </main>
 
-  <div v-if="(route.path === '/signin') || (route.path === '/signup')">
+  <div v-else>
       <RouterView />
   </div>
 
