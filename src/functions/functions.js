@@ -13,8 +13,10 @@ export const formatValue = (value) => {
 export const getCategoriesByPlanId = async (planId) => {
     const loginStore = useLoginStore();
     
+    const baseApiUrl = import.meta.env.VITE_API_BASE_URL;
+
     try {
-        let categories = await axios(`http://192.168.100.17:8080/categories/plan/${planId}`, {
+        let categories = await axios(`${baseApiUrl}/categories/plan/${planId}`, {
             headers: {
                 Authorization: `Bearer ${loginStore.jsonWebToken}`
             }

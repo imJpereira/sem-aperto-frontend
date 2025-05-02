@@ -5,6 +5,7 @@ import { formatDate, formatValue, getCategoriesByPlanId } from '@/functions/func
 import { usePlanStore } from '@/stores/planStore'
 import { useLoginStore } from '@/stores/loginStore'
 
+const baseApiUrl = import.meta.env.VITE_API_BASE_URL;
 const planStore = usePlanStore()
 const loginStore = useLoginStore();
 
@@ -33,7 +34,7 @@ const createExpense = async (event) => {
   }
 
   try {
-    await axios.post('http://192.168.100.17:8080/expenses/create', {
+    await axios.post(`${baseApiUrl}/expenses/create`, {
       plan: expensePlan.value,
       category: expenseCategory.value,
       value: expenseValue.value,
@@ -60,7 +61,7 @@ const createExpense = async (event) => {
 }
 
 const showExpenses = async () => {
-  expenses.value = await axios.get('http://192.168.100.17:8080/expenses/all',{
+  expenses.value = await axios.get(`${baseApiUrl}/expenses/all`,{
     headers: {
       Authorization: `Bearer ${loginStore.jsonWebToken}`
     }
@@ -72,12 +73,12 @@ const deleteExpense = async (expenseId) => {
   const userResponse = confirm('Tem certeza que deseja excluír essa despesa? ')
   if (!userResponse) return
 
-  const response = await axios.delete(`http://192.168.100.17:8080/expenses/delete/${expenseId}`,{
+  const response = await axios.delete(`${baseApiUrl}/expenses/delete/${expenseId}`,{
     headers: {
       Authorization: `Bearer ${loginStore.jsonWebToken}`
     }
   })
-  if (response.status == 200) {
+  if (response.status == 204) {
     alert('Excluído com sucesso!')
     showExpenses()
     return

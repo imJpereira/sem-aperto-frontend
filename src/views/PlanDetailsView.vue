@@ -7,6 +7,7 @@ import { useRoute, useRouter } from 'vue-router'
 import { usePlanStore } from '@/stores/planStore'
 import { useLoginStore } from '@/stores/loginStore'
 
+const baseApiUrl = import.meta.env.VITE_API_BASE_URL;
 const route = useRoute()
 const router = useRouter()
 const planStore = usePlanStore();
@@ -44,7 +45,7 @@ const deletePlan = (id) => {
   if (!userResponse) return
 
   try {
-    axios.delete(`http://192.168.100.17:8080/plans/delete/${id}`, {
+    axios.delete(`${baseApiUrl}/plans/delete/${id}`, {
       headers: {
         Authorization: `Bearer ${loginStore.jsonWebToken}`
       }
@@ -79,7 +80,7 @@ const deleteCategory = async (categoryId) => {
   if (!userResponse) return
   
   try {
-    await axios.delete(`http://192.168.100.17:8080/categories/delete/${categoryId}`, {
+    await axios.delete(`${baseApiUrl}/categories/delete/${categoryId}`, {
       headers: {
         Authorization: `Bearer ${loginStore.jsonWebToken}`
       }
@@ -96,7 +97,7 @@ const deleteCategory = async (categoryId) => {
 const showCategoryExpenses = async (categoryId) => {
   try {
     categoryExpenses.value = await axios(
-      `http://192.168.100.17:8080/expenses/category/${categoryId}`,{
+      `${baseApiUrl}/expenses/category/${categoryId}`,{
         headers : {
           Authorization: `Bearer ${loginStore.jsonWebToken}`
         }
@@ -110,7 +111,8 @@ const showCategoryExpenses = async (categoryId) => {
 
 const findPlan = async () => {
   try {
-    plan.value = await axios(`http://192.168.100.17:8080/plans/${route.params.id}`, {
+    console.log(baseApiUrl);
+    plan.value = await axios(`${baseApiUrl}/plans/${route.params.id}`, {
       headers: {
         Authorization: `Bearer ${loginStore.jsonWebToken}`
       }
@@ -125,7 +127,7 @@ const updatePlanTitle = async () => {
   if (plan.value.title == planTitle.value) return; 
 
   try {
-    await axios.patch(`http://192.168.100.17:8080/plans/${route.params.id}/update`, {
+    await axios.patch(`${baseApiUrl}/plans/${route.params.id}/update`, {
       title : plan.value.title
     }, 
     {
@@ -142,7 +144,7 @@ const updatePlanStartDate = async () => {
   if (plan.value.startDate == planStartDate.value) return; 
 
   try {
-    await axios.patch(`http://192.168.100.17:8080/plans/${route.params.id}/update`, {
+    await axios.patch(`${baseApiUrl}/plans/${route.params.id}/update`, {
       startDate: plan.value.startDate,
     }, 
     {
@@ -159,7 +161,7 @@ const updatePlanFinalDate = async () => {
   if (plan.value.finalDate == planFinalDate.value) return; 
 
   try {
-    await axios.patch(`http://192.168.100.17:8080/plans/${route.params.id}/update`, {
+    await axios.patch(`${baseApiUrl}/plans/${route.params.id}/update`, {
       finalDate: plan.value.finalDate,
     },
     {
@@ -177,7 +179,7 @@ const updatePlanInitialCapital = async () => {
   if (plan.value.initialCapital == planInitialCapital.value) return; 
 
   try {
-    await axios.patch(`http://192.168.100.17:8080/plans/${route.params.id}/update`, {
+    await axios.patch(`${baseApiUrl}/plans/${route.params.id}/update`, {
       initialCapital: plan.value.initialCapital,
     },
     {
