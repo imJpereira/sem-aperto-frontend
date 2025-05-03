@@ -23,13 +23,13 @@ const createExpense = async (event) => {
   event.preventDefault()
 
   if (expenseValue.value <= 0 || isNaN(expenseValue.value)) {
-    alert('Informe um valor')
-    return
+    alert('Informe um valor');""
+    return;
   }
 
-  if (new Date(expenseDate.value) > new Date()) {
-    alert('Não é possível informara data futura')
-    return
+  if (!expensePlan.value) {
+    alert('Informe um plano')
+    return;
   }
 
   try {

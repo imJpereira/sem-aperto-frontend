@@ -125,7 +125,7 @@ const updatePlanTitle = async () => {
   if (plan.value.title == planTitle.value) return; 
 
   try {
-    await axios.patch(`http://192.168.100.17:8080/plans/${route.params.id}/update`, {
+    await axios.patch(`http://192.168.100.17:8080/plans/update/${route.params.id}`, {
       title : plan.value.title
     }, 
     {
@@ -142,7 +142,7 @@ const updatePlanStartDate = async () => {
   if (plan.value.startDate == planStartDate.value) return; 
 
   try {
-    await axios.patch(`http://192.168.100.17:8080/plans/${route.params.id}/update`, {
+    await axios.patch(`http://192.168.100.17:8080/plans/update/${route.params.id}`, {
       startDate: plan.value.startDate,
     }, 
     {
@@ -159,7 +159,7 @@ const updatePlanFinalDate = async () => {
   if (plan.value.finalDate == planFinalDate.value) return; 
 
   try {
-    await axios.patch(`http://192.168.100.17:8080/plans/${route.params.id}/update`, {
+    await axios.patch(`http://192.168.100.17:8080/plans/update/${route.params.id}`, {
       finalDate: plan.value.finalDate,
     },
     {
@@ -173,11 +173,10 @@ const updatePlanFinalDate = async () => {
 };
 
 const updatePlanInitialCapital = async () => {
-  console.log(plan.value.initialCapital);
-  if (plan.value.initialCapital == planInitialCapital.value) return; 
+  if (plan.value.initialCapital === planInitialCapital.value) return; 
 
   try {
-    await axios.patch(`http://192.168.100.17:8080/plans/${route.params.id}/update`, {
+    await axios.patch(`http://192.168.100.17:8080/plans/update/${route.params.id}`, {
       initialCapital: plan.value.initialCapital,
     },
     {
