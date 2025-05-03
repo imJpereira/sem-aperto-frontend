@@ -4,6 +4,7 @@ import axios from 'axios';
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 
+const baseApiUrl = import.meta.env.VITE_API_BASE_URL;
 const loginStore = useLoginStore();
 const router = useRouter();
 
@@ -14,7 +15,7 @@ const password = ref("");
 const createUser = async () => {
     //validações
     try {
-        await axios.post("http://192.168.100.17:8080/auth/signup", {
+        await axios.post(`${baseApiUrl}/auth/signup`, {
             username: username.value,
             email: email.value,
             password: password.value
@@ -27,9 +28,6 @@ const createUser = async () => {
 }
 
 const signin = async () => {
-    console.log(username.value)
-    console.log(password.value)
-
     try {
         const jwt = await axios.post("http://192.168.100.17:8080/auth/signin", {
             username: username.value,

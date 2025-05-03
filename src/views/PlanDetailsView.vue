@@ -7,36 +7,37 @@ import { useRoute, useRouter } from 'vue-router'
 import { usePlanStore } from '@/stores/planStore'
 import { useLoginStore } from '@/stores/loginStore'
 
+const baseApiUrl = import.meta.env.VITE_API_BASE_URL
 const route = useRoute()
 const router = useRouter()
-const planStore = usePlanStore();
-const loginStore = useLoginStore();
+const planStore = usePlanStore()
+const loginStore = useLoginStore()
 
 const plan = ref([])
 
-const planTitle = ref("");
-const planInitialCapital = ref("");
-const planStartDate = ref("");
-const planFinalDate = ref("");
+const planTitle = ref('')
+const planInitialCapital = ref('')
+const planStartDate = ref('')
+const planFinalDate = ref('')
 
 const categoryTotals = {}
 
 const categories = ref([])
 const categoryExpenses = ref([])
 
-const modalVisible = ref(false);
+const modalVisible = ref(false)
 
 const redirectToPlanRoute = () => {
   router.push({ name: 'Plan' })
 }
 
 const handleModalClose = () => {
-  toggleVisibility(false);
-  showCategories();
+  toggleVisibility(false)
+  showCategories()
 }
 
-const  toggleVisibility = (visibility) => {
-  modalVisible.value = visibility;
+const toggleVisibility = (visibility) => {
+  modalVisible.value = visibility
 }
 
 const deletePlan = (id) => {
@@ -44,10 +45,10 @@ const deletePlan = (id) => {
   if (!userResponse) return
 
   try {
-    axios.delete(`http://192.168.100.17:8080/plans/delete/${id}`, {
+    axios.delete(`${baseApiUrl}/plans/delete/${id}`, {
       headers: {
-        Authorization: `Bearer ${loginStore.jsonWebToken}`
-      }
+        Authorization: `Bearer ${loginStore.jsonWebToken}`,
+      },
     })
   } catch (e) {
     console.log(e)
@@ -55,53 +56,55 @@ const deletePlan = (id) => {
   }
 
   alert('plano excluído com sucesso!')
-  planStore.getPlans();
-  redirectToPlanRoute();
+  planStore.getPlans()
+  redirectToPlanRoute()
 }
 
 const showCategories = async () => {
   try {
-    categories.value = await getCategoriesByPlanId(route.params.id);
-    getCategoryTotals();
+    categories.value = await getCategoriesByPlanId(route.params.id)
+    getCategoryTotals()
   } catch (e) {
-    console.log(e);
+    console.log(e)
   }
 }
 
-const getCategoryTotals =  () => {
-  categoryTotals.targetValue = categories.value.reduce((sum, category) => sum + Number(category.targetValue), 0);
-  categoryTotals.actualValue = categories.value.reduce((sum, category) => sum + Number(category.actualValue), 0);
-
+const getCategoryTotals = () => {
+  categoryTotals.targetValue = categories.value.reduce(
+    (sum, category) => sum + Number(category.targetValue),
+    0,
+  )
+  categoryTotals.actualValue = categories.value.reduce(
+    (sum, category) => sum + Number(category.actualValue),
+    0,
+  )
 }
 
 const deleteCategory = async (categoryId) => {
   const userResponse = confirm('Tem certeza que deseja excluír essa despesa? ')
   if (!userResponse) return
-  
+
   try {
-    await axios.delete(`http://192.168.100.17:8080/categories/delete/${categoryId}`, {
+    await axios.delete(`${baseApiUrl}/categories/delete/${categoryId}`, {
       headers: {
-        Authorization: `Bearer ${loginStore.jsonWebToken}`
-      }
+        Authorization: `Bearer ${loginStore.jsonWebToken}`,
+      },
     })
-    alert("deletado com sucesso");
-    showCategories();
-    return;
+    alert('deletado com sucesso')
+    showCategories()
+    return
   } catch (e) {
     console.log(e)
   }
-
 }
 
 const showCategoryExpenses = async (categoryId) => {
   try {
-    categoryExpenses.value = await axios(
-      `http://192.168.100.17:8080/expenses/category/${categoryId}`,{
-        headers : {
-          Authorization: `Bearer ${loginStore.jsonWebToken}`
-        }
-      }
-    )
+    categoryExpenses.value = await axios(`${baseApiUrl}/expenses/category/${categoryId}`, {
+      headers: {
+        Authorization: `Bearer ${loginStore.jsonWebToken}`,
+      },
+    })
     categoryExpenses.value = categoryExpenses.value.data
   } catch (e) {
     console.log(e)
@@ -110,10 +113,11 @@ const showCategoryExpenses = async (categoryId) => {
 
 const findPlan = async () => {
   try {
-    plan.value = await axios(`http://192.168.100.17:8080/plans/${route.params.id}`, {
+    console.log(baseApiUrl)
+    plan.value = await axios(`${baseApiUrl}/plans/${route.params.id}`, {
       headers: {
-        Authorization: `Bearer ${loginStore.jsonWebToken}`
-      }
+        Authorization: `Bearer ${loginStore.jsonWebToken}`,
+      },
     })
     plan.value = plan.value.data
   } catch (e) {
@@ -122,77 +126,88 @@ const findPlan = async () => {
 }
 
 const updatePlanTitle = async () => {
-  if (plan.value.title == planTitle.value) return; 
+  if (plan.value.title == planTitle.value) return
 
   try {
-    await axios.patch(`http://192.168.100.17:8080/plans/update/${route.params.id}`, {
-      title : plan.value.title
-    }, 
-    {
-      headers: {
-        Authorization: `Bearer ${loginStore.jsonWebToken}`
-      }    
-    });
+    await axios.patch(
+      `${baseApiUrl}/plans/${route.params.id}/update`,
+      {
+        title: plan.value.title,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${loginStore.jsonWebToken}`,
+        },
+      },
+    )
   } catch (e) {
-    console.log(e);
+    console.log(e)
   }
 }
 
 const updatePlanStartDate = async () => {
-  if (plan.value.startDate == planStartDate.value) return; 
+  if (plan.value.startDate == planStartDate.value) return
 
   try {
-    await axios.patch(`http://192.168.100.17:8080/plans/update/${route.params.id}`, {
-      startDate: plan.value.startDate,
-    }, 
-    {
-      headers: {
-        Authorization: `Bearer ${loginStore.jsonWebToken}`
-      }
-    });
+    await axios.patch(
+      `${baseApiUrl}/plans/update/${route.params.id}`,
+      {
+        startDate: plan.value.startDate,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${loginStore.jsonWebToken}`,
+        },
+      },
+    )
   } catch (e) {
-    console.log(e);
+    console.log(e)
   }
-};
+}
 
 const updatePlanFinalDate = async () => {
-  if (plan.value.finalDate == planFinalDate.value) return; 
+  if (plan.value.finalDate == planFinalDate.value) return
 
   try {
-    await axios.patch(`http://192.168.100.17:8080/plans/update/${route.params.id}`, {
-      finalDate: plan.value.finalDate,
-    },
-    {
-      headers: {
-        Authorization: `Bearer ${loginStore.jsonWebToken}`
-      }
-    });
+    await axios.patch(
+      `${baseApiUrl}/plans/update/${route.params.id}`,
+      {
+        finalDate: plan.value.finalDate,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${loginStore.jsonWebToken}`,
+        },
+      },
+    )
   } catch (e) {
-    console.log(e);
+    console.log(e)
   }
-};
+}
 
 const updatePlanInitialCapital = async () => {
-  if (plan.value.initialCapital === planInitialCapital.value) return; 
+  if (plan.value.initialCapital === planInitialCapital.value) return
 
   try {
-    await axios.patch(`http://192.168.100.17:8080/plans/update/${route.params.id}`, {
-      initialCapital: plan.value.initialCapital,
-    },
-    {
-      headers: {
-        Authorization: `Bearer ${loginStore.jsonWebToken}`
-      }
-    });
+    await axios.patch(
+      `${baseApiUrl}/plans/update/${route.params.id}`,
+      {
+        initialCapital: plan.value.initialCapital,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${loginStore.jsonWebToken}`,
+        },
+      },
+    )
   } catch (e) {
-    console.log(e);
+    console.log(e)
   }
-};
-
+}
 
 onMounted(() => {
-  findPlan();
-  showCategories();
+  findPlan()
+  showCategories()
 })
 </script>
 
@@ -261,7 +276,7 @@ onMounted(() => {
     </div>
 
     <div class="py-2">
-       <button @click="toggleVisibility(true)" class="btn btn-success">Adicionar Categoria</button>
+      <button @click="toggleVisibility(true)" class="btn btn-success">Adicionar Categoria</button>
     </div>
 
     <div class="main-content">
@@ -279,27 +294,33 @@ onMounted(() => {
             class="category grid border-bottom py-2"
             @click="showCategoryExpenses(category.categoryId)"
           >
-              <p>{{ category.description }}</p>
-              <p>{{ formatValue(category.targetValue) }}</p>
-              <p>{{ formatValue(category.actualValue) }}</p>
-              <p>{{ formatValue(category.targetValue - category.actualValue) }}</p>
-              <div class="d-flex justify-content-end">
-                <img
-                  @click="deleteCategory(category.categoryId)"
-                  class="delete-category-img"
-                  src="../assets/icons/delete-reg-icon.svg"
-                  alt="delete"
-                  width="30px"
-                  height="30px"
-                />
-              </div>
+            <p>{{ category.description }}</p>
+            <p>{{ formatValue(category.targetValue) }}</p>
+            <p>{{ formatValue(category.actualValue) }}</p>
+            <p>{{ formatValue(category.targetValue - category.actualValue) }}</p>
+            <div class="d-flex justify-content-end">
+              <img
+                @click="deleteCategory(category.categoryId)"
+                class="delete-category-img"
+                src="../assets/icons/delete-reg-icon.svg"
+                alt="delete"
+                width="30px"
+                height="30px"
+              />
+            </div>
           </div>
         </div>
         <div class="grid pb-3 border-top border-dark">
-            <p><b>Total</b></p>
-            <p><b>{{ formatValue(categoryTotals.targetValue) }}</b></p>
-            <p><b>{{ formatValue(categoryTotals.actualValue) }}</b></p>
-            <p><b>{{ formatValue(categoryTotals.targetValue - categoryTotals.actualValue) }}</b></p>
+          <p><b>Total</b></p>
+          <p>
+            <b>{{ formatValue(categoryTotals.targetValue) }}</b>
+          </p>
+          <p>
+            <b>{{ formatValue(categoryTotals.actualValue) }}</b>
+          </p>
+          <p>
+            <b>{{ formatValue(categoryTotals.targetValue - categoryTotals.actualValue) }}</b>
+          </p>
         </div>
       </section>
       <section class="category-expenses">
@@ -321,8 +342,12 @@ onMounted(() => {
     </div>
   </div>
 
-
-  <NewCategoryModal v-if="modalVisible" ref="modal"  :plan-id="plan.planId" @close="handleModalClose()"/>
+  <NewCategoryModal
+    v-if="modalVisible"
+    ref="modal"
+    :plan-id="plan.planId"
+    @close="handleModalClose()"
+  />
 </template>
 
 <style scoped>
@@ -449,5 +474,4 @@ header {
     transform: scale(1.1);
   }
 }
-
 </style>

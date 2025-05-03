@@ -5,12 +5,13 @@ import { useLoginStore } from './loginStore';
 
 export const usePlanStore = defineStore('plan', () => {
     
+    const apiBaseUrl = import.meta.env.VITE_API_BASE_URL;
     const plans = ref([]);
     const loginStore = useLoginStore();
 
     const getPlans = async () => {
         try {
-           plans.value = await axios("http://192.168.100.17:8080/plans/all", {
+           plans.value = await axios(`${apiBaseUrl}/plans/all`, {
             headers: {
                 Authorization: `Bearer ${loginStore.jsonWebToken}`
             }

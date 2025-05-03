@@ -5,6 +5,7 @@ import BaseModal from './BaseModal.vue';
 import { useModal } from '@/composables/useModal';
 import { useLoginStore } from '@/stores/loginStore';
 
+const baseApiUrl = import.meta.env.VITE_API_BASE_URL;
 const emit = defineEmits(["close"]);
 const { closeModal } = useModal(emit);
 
@@ -30,7 +31,7 @@ const planPostRequest = async () => {
     if (capital.value < 0) return "O Capital não pode ser menor que 0";
     
     try {
-        await axios.post("http://192.168.100.17:8080/plans/create", {
+        await axios.post(`${baseApiUrl}/plans/create`, {
             title : title.value,
             startDate : startDate.value,
             finalDate : finalDate.value,

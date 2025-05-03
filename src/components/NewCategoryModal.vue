@@ -5,6 +5,7 @@ import { useModal } from '@/composables/useModal';
 import axios from 'axios';
 import { useLoginStore } from '@/stores/loginStore';
 
+const baseApiUrl = import.meta.env.VITE_API_BASE_URL;
 const loginStore = useLoginStore();
 
 const description = ref("");
@@ -32,7 +33,7 @@ const categoryPostRequest = async () => {
     if (targetValue.value <= 0 ) return "Valor inválido";
 
     try {
-        await axios.post(`http://192.168.100.17:8080/categories/create/plan/${props.planId}`, {
+        await axios.post(`${baseApiUrl}/categories/create/plan/${props.planId}`, {
             description: description.value,
             targetValue: targetValue.value
         }, {
