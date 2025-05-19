@@ -6,6 +6,7 @@ import { onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { usePlanStore } from '@/stores/planStore'
 import { useLoginStore } from '@/stores/loginStore'
+import Category from '@/components/Category.vue'
 
 const baseApiUrl = import.meta.env.VITE_API_BASE_URL
 const route = useRoute()
@@ -288,29 +289,15 @@ onMounted(() => {
           <p class="caption">Saldo</p>
         </div>
         <div>
-          <div
+          <Category 
             v-for="category in categories"
             :key="category.id"
-            class="category grid border-bottom py-2"
             @click="showCategoryExpenses(category.categoryId)"
-          >
-            <p>{{ category.description }}</p>
-            <p>{{ formatValue(category.targetValue) }}</p>
-            <p>{{ formatValue(category.actualValue) }}</p>
-            <p>{{ formatValue(category.targetValue - category.actualValue) }}</p>
-            <div class="d-flex justify-content-end">
-              <img
-                @click="deleteCategory(category.categoryId)"
-                class="delete-category-img"
-                src="../assets/icons/delete-reg-icon.svg"
-                alt="delete"
-                width="30px"
-                height="30px"
-              />
-            </div>
-          </div>
+            :category="category"
+            :showCategories="showCategories"
+          />
         </div>
-        <div class="grid pb-3 border-top border-dark">
+        <div class="grid pb-3">
           <p><b>Total</b></p>
           <p>
             <b>{{ formatValue(categoryTotals.targetValue) }}</b>
@@ -445,25 +432,16 @@ header {
 
 .categories {
   flex-grow: 1;
-  background-color: rgb(241, 241, 241);
+  background-color: #f9f9f9;
   padding: 1rem;
   border-radius: 10px;
 }
 
 .category-expenses {
-  background-color: rgb(241, 241, 241);
+  background-color: #f9f9f9;
   min-width: 40%;
   padding: 1rem;
   border-radius: 10px;
-}
-
-.category {
-  background-color: inherit;
-}
-
-.category:hover {
-  background-color: rgb(236, 236, 236);
-  cursor: pointer;
 }
 
 .delete-category-img {
