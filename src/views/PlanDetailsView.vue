@@ -24,6 +24,7 @@ const planFinalDate = ref('')
 const categoryTotals = {}
 
 const categories = ref([])
+const selectedCategory = ref(null);
 const categoryExpenses = ref([])
 
 const modalVisible = ref(false)
@@ -68,6 +69,8 @@ const showCategories = async () => {
   } catch (e) {
     console.log(e)
   }
+
+  selectedCategory.value = categories.value[0].categoryId;
 }
 
 const getCategoryTotals = () => {
@@ -292,7 +295,8 @@ onMounted(() => {
           <Category 
             v-for="category in categories"
             :key="category.id"
-            @click="showCategoryExpenses(category.categoryId)"
+            @click="showCategoryExpenses(category.categoryId); selectedCategory = category.categoryId"
+            :selected="selectedCategory"
             :category="category"
             :showCategories="showCategories"
           />

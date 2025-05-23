@@ -8,7 +8,8 @@ const loginStore = useLoginStore();
 
 const props = defineProps({
     showCategories: Function,
-    category: String
+    category: Object, 
+    selected: String
 });
 
 const deleteCategory = async (categoryId) => {
@@ -34,13 +35,21 @@ const isBaseCategory = (type) => {
    return type == 'BASE';
 }
 
+const isSelected = (categoryId) => {
+  return categoryId === props.selected;
+}
+
 </script>
 
 <template>
     <div 
       class="grid category-container"
-      :class="{'base-category': isBaseCategory(category.type)}"
-    >
+      :class="{
+        'base-category': isBaseCategory(category.type),
+        'selected': isSelected(category.categoryId)
+      }"
+      @click="selectedCategory = category.categoryId"
+      >
         <p>{{ category.description }}</p>
         <p>{{ formatValue(category.targetValue) }}</p>
         <p>{{ formatValue(category.actualValue) }}</p>
@@ -71,13 +80,17 @@ const isBaseCategory = (type) => {
   }
 
   .base-category {
-    background-color: #d4e7e0;
+    background-color: #e2f3ed;
     font-weight: 500;
 
     &:hover {
       background-color: #c0dbd1;
 
     }
+  }
+
+  .selected {
+    background-color: #c0dbd1;
   }
 
 </style>
