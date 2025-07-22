@@ -1,5 +1,5 @@
 <script setup>
-import { formatValue } from '@/functions/functions';
+import { formatValue } from '@/assets/functions/functions';
 import { useLoginStore } from '@/stores/loginStore';
 import axios from 'axios';
 

@@ -1,7 +1,7 @@
 <script setup>
 import axios from 'axios'
 import { onMounted, ref } from 'vue'
-import { formatDate, formatValue, getCategoriesByPlanId } from '@/functions/functions'
+import { formatDate, formatValue, getCategoriesByPlanId } from '@/assets/functions/functions'
 import { usePlanStore } from '@/stores/planStore'
 import { useLoginStore } from '@/stores/loginStore'
 

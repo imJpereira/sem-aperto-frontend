@@ -1,44 +1,41 @@
 <script setup>
 import { useLoginStore } from '@/stores/loginStore';
-import axios from 'axios';
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
+import { signUp, signIn } from '@/services/authService';
 
-const baseApiUrl = import.meta.env.VITE_API_BASE_URL;
+const router = useRouter(); 
 const loginStore = useLoginStore();
-const router = useRouter();
 
 const username = ref("");
 const email = ref("");
 const password = ref("");
 
-const createUser = async () => {
-    //validações
+const handleSignUp = async () => {
+    let msg = "";
+    
+    if (!username.value) msg += "Informe um usuário. ";
+    if (!email.value) msg += "Informe um email. ";     
+    if (!password.value) msg += "Informe uma senha. ";
+
+    if (msg !== "") {
+        alert(msg);
+        return
+    }
+
     try {
-        await axios.post(`${baseApiUrl}/auth/signup`, {
-            username: username.value,
-            email: email.value,
-            password: password.value
-        });
+        const response = await signUp(username.value, email.value, password.value);
 
-        signin();
-    } catch (e) {
-        console.log(e);
-    } 
-}
+        if (response.status === 201) {
+            await signIn(username.value, password.value);
 
-const signin = async () => {
-    try {
-        const jwt = await axios.post("http://192.168.100.17:8080/auth/signin", {
-            username: username.value,
-            password: password.value
-        });
-
-        loginStore.jsonWebToken = jwt.data.token;
-        router.push("/planos");
+            if (loginStore.user.jsonWebToken) {
+                router.push("/planos");
+            } 
+        } 
 
     } catch (e) {
-        console.log(e);
+        console.error(e);
     }
 }
 
@@ -53,7 +50,7 @@ const signin = async () => {
                 <div class="text-center">
                     <span >Já tem uma conta? <RouterLink to="/signin" class="text-success">Clique aqui para fazer login</RouterLink></span>
                 </div>
-                <form @submit.prevent="createUser" class="py-5">
+                <form @submit.prevent="handleSignUp" class="py-5">
                     <div class="w-100 pb-3">
                         <label for="username" class="form-label">Usuário</label>
                         <input v-model="username" id="username" type="text" class="form-control">

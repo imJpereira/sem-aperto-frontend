@@ -1,7 +1,13 @@
 import { defineStore } from 'pinia'
+import { ref } from 'vue';
 
 export const useLoginStore = defineStore('login', () => {
-  const jsonWebToken = null;
 
-  return { jsonWebToken }
+  const user = ref({
+    username: '',
+    email: '',
+    jsonWebToken: ''
+  });
+
+  return { user }
 })

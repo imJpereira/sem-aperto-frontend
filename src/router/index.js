@@ -1,11 +1,11 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import ExpensesView from '../views/ExpensesView.vue'
-import PlansView from '@/views/PlansView.vue'
-import PlanDetailsView from '@/views/PlanDetailsView.vue'
-import SignInView from '@/views/SignInView.vue'
-import SignUpView from '@/views/SignUpView.vue'
+import ExpensesView from '@/views/app/ExpensesView.vue'
+import PlansView from '@/views/app/PlansView.vue'
+import PlanDetailsView from '@/views/app/PlanDetailsView.vue'
+import SignInView from '@/views/auth/SignInView.vue'
+import SignUpView from '@/views/auth/SignUpView.vue'
 import { useLoginStore } from '@/stores/loginStore'
-import NotFoundView from '@/views/NotFoundView.vue'
+import NotFoundView from '@/views/app/NotFoundView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -52,7 +52,7 @@ const router = createRouter({
 
 function getToken() {
   const loginStore = useLoginStore(); 
-  return loginStore.jsonWebToken; 
+  return loginStore.user.jsonWebToken; 
 }
 
 // Middleware executado antes de mudar a rota (nativo do Vue Router)

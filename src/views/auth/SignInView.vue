@@ -1,32 +1,37 @@
 <script setup>
 import { useLoginStore } from '@/stores/loginStore';
-import axios from 'axios';
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
+import { signIn } from '@/services/authService';
 
-const baseApiUrl = import.meta.env.VITE_API_BASE_URL;
 const loginStore = useLoginStore();
 const router = useRouter();
 
 const username = ref("");
 const password = ref("");
 
-const validateLogin = async () => {
-    try {
-            console.log(baseApiUrl);
-            const jwt = await axios.post(`${baseApiUrl}/auth/signin`, {
-            username: username.value,
-            password: password.value
-        });
-
-        loginStore.jsonWebToken = jwt.data.token;
-
-        router.push("/planos")
-    } catch (e) {
-        console.log(e);
+const handleSIgnIn = async () => {
+    let msg = "";
+    if (!username.value) msg += "Informe um usuário. ";
+    if (!password.value) msg += "Informe uma senha. ";         
+    if (msg !== "") {
+        alert(msg);
+        return
     }
 
+    try {
+        await signIn(username.value, password.value);
+
+        if (loginStore.user.jsonWebToken) {
+            router.push("/planos");
+        } else {
+            alert("Usuário ou senha inválidos.");
+        }
+    } catch (e) {
+        console.error(e);
+    }
 }
+
 
 </script>
 
@@ -42,7 +47,7 @@ const validateLogin = async () => {
                 <div class="text-center">
                     <span >Não tem uma conta? <RouterLink to="/signup" class="text-success">Clique aqui para fazer cadastrar</RouterLink></span>
                 </div>
-                <form @submit.prevent="validateLogin" class="py-5">
+                <form @submit.prevent="handleSIgnIn" class="py-5">
                     <div class="w-100 pb-3">
                         <label for="username" class="form-label">Usuário</label>
                         <input v-model="username" id="username" type="text" class="form-control">

@@ -1,6 +1,6 @@
 <script setup>
 import NewCategoryModal from '@/components/NewCategoryModal.vue'
-import { formatDate, formatValue, getCategoriesByPlanId } from '@/functions/functions'
+import { formatDate, formatValue, getCategoriesByPlanId } from '@/assets/functions/functions'
 import axios from 'axios'
 import { onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
