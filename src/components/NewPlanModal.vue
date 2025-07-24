@@ -4,6 +4,7 @@ import { ref, defineEmits } from 'vue';
 import BaseModal from './BaseModal.vue';
 import { useModal } from '@/composables/useModal';
 import { useLoginStore } from '@/stores/loginStore';
+import planService from '@/services/planService';
 
 const baseApiUrl = import.meta.env.VITE_API_BASE_URL;
 const emit = defineEmits(["close"]);
@@ -18,34 +19,27 @@ const capital = ref("");
 
 const isFormValid = () => title.value && startDate.value && finalDate.value && capital.value;
 
-const createPlan = async () => {
-    alert(await planPostRequest()); 
+const handleSubmit = async () => {
+    alert(await createPlan()); 
     closeModal();
 }
 
-const planPostRequest = async () => {
+const createPlan = async () => {
     if (!title.value) return "Título inválido";
     if (startDate.value === null) return "Data Inicial Inválida";
     if (finalDate.value === null) return "Data Final Inválida";
     if (new Date(startDate.value) > new Date(finalDate.value)) return "Data final maior que a data inicial";
     if (capital.value < 0) return "O Capital não pode ser menor que 0";
     
-    try {
-        await axios.post(`${baseApiUrl}/plans/create`, {
-            title : title.value,
-            startDate : startDate.value,
-            finalDate : finalDate.value,
-            initialCapital : capital.value
-        },
-        {
-            headers: {
-                Authorization: `Bearer ${loginStore.jsonWebToken}`
-            }
-        });
-        return "Plano criado com sucesso";
-    } catch(e) {
-        return e;
-    }
+    const response = await planService.createPlan({
+        title: title.value,
+        startDate: startDate.value,
+        finalDate: finalDate.value,
+        initialCapital: capital.value
+    });
+    console.log(response.status);
+
+    return response.status === 201 ? "Plano criado com sucesso" : "Erro ao criar plano";
 }
 </script>
 
@@ -53,7 +47,7 @@ const planPostRequest = async () => {
     
 <BaseModal>
     <img class="close" @click="closeModal()" width="20" height="20" src="../assets/icons/cancel-white.svg" alt="cancelar">
-    <form action="POST" @submit.prevent="createPlan()">
+    <form action="POST" @submit.prevent="handleSubmit()">
         <div>
             <label for="">Título</label>
             <input v-model="title" class="form-control" type="text">

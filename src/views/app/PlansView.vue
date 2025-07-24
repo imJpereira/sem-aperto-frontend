@@ -7,7 +7,7 @@ import { usePlanStore } from '@/stores/planStore';
 
 const router = useRouter();
 const planStore = usePlanStore();
-const visible = ref(false);
+const modalVisible = ref(false);
 const modal = ref(null);
 
 const handleDocumentClick = (e) => {
@@ -18,6 +18,7 @@ const handleDocumentClick = (e) => {
 }
 
 const showPlanDetail = (plan) => {
+  console.log(plan);
   router.push({
                 name: "PlanDetail", 
                 params: { id: plan.planId }
@@ -26,11 +27,11 @@ const showPlanDetail = (plan) => {
 
 const handleModalClose = async () => {
   toggleVisibility(false);
-  planStore.getPlans();
+  await planStore.getPlans();
 }
 
 const  toggleVisibility = (visibility) => {
-  visible.value = visibility;
+  modalVisible.value = visibility;
 }
 
 onMounted(async () => {
@@ -71,7 +72,7 @@ onUnmounted(() => {
 
   </section>
 
-  <NewPlanModal v-if="visible" ref="modal" @close="handleModalClose"/>
+  <NewPlanModal v-if="modalVisible" ref="modal" @close="handleModalClose"/>
 </template>
 
 <style scoped>

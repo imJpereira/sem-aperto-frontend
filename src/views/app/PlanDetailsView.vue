@@ -7,8 +7,9 @@ import { useRoute, useRouter } from 'vue-router'
 import { usePlanStore } from '@/stores/planStore'
 import { useLoginStore } from '@/stores/loginStore'
 import Category from '@/components/Category.vue'
+import planService from '@/services/planService'
 
-const baseApiUrl = import.meta.env.VITE_API_BASE_URL
+const baseApiUrl = import.meta.env.VITE_API_BASE_URlL
 const route = useRoute()
 const router = useRouter()
 const planStore = usePlanStore()
@@ -42,26 +43,6 @@ const toggleVisibility = (visibility) => {
   modalVisible.value = visibility
 }
 
-const deletePlan = (id) => {
-  const userResponse = confirm('Tem certeza que deseja excluír esse plano? ')
-  if (!userResponse) return
-
-  try {
-    axios.delete(`${baseApiUrl}/plans/delete/${id}`, {
-      headers: {
-        Authorization: `Bearer ${loginStore.jsonWebToken}`,
-      },
-    })
-  } catch (e) {
-    console.log(e)
-    return
-  }
-
-  alert('plano excluído com sucesso!')
-  planStore.getPlans()
-  redirectToPlanRoute()
-}
-
 const showCategories = async () => {
   try {
     categories.value = await getCategoriesByPlanId(route.params.id)
@@ -84,24 +65,6 @@ const getCategoryTotals = () => {
   )
 }
 
-const deleteCategory = async (categoryId) => {
-  const userResponse = confirm('Tem certeza que deseja excluír essa despesa? ')
-  if (!userResponse) return
-
-  try {
-    await axios.delete(`${baseApiUrl}/categories/delete/${categoryId}`, {
-      headers: {
-        Authorization: `Bearer ${loginStore.jsonWebToken}`,
-      },
-    })
-    alert('deletado com sucesso')
-    showCategories()
-    return
-  } catch (e) {
-    console.log(e)
-  }
-}
-
 const showCategoryExpenses = async (categoryId) => {
   try {
     categoryExpenses.value = await axios(`${baseApiUrl}/expenses/category/${categoryId}`, {
@@ -116,97 +79,37 @@ const showCategoryExpenses = async (categoryId) => {
 }
 
 const findPlan = async () => {
-  try {
-    console.log(baseApiUrl)
-    plan.value = await axios(`${baseApiUrl}/plans/${route.params.id}`, {
-      headers: {
-        Authorization: `Bearer ${loginStore.jsonWebToken}`,
-      },
-    })
-    plan.value = plan.value.data
-  } catch (e) {
-    console.log(e)
-  }
+  plan.value = await planService.fetchPlanById(route.params.id);
 }
 
 const updatePlanTitle = async () => {
-  if (plan.value.title == planTitle.value) return
-
-  try {
-    await axios.patch(
-      `${baseApiUrl}/plans/${route.params.id}/update`,
-      {
-        title: plan.value.title,
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${loginStore.jsonWebToken}`,
-        },
-      },
-    )
-  } catch (e) {
-    console.log(e)
-  }
+  if (plan.value.title == planTitle.value) return;
+  await planService.updatePlanTitle(route.params.id, planTitle.value);
 }
 
 const updatePlanStartDate = async () => {
   if (plan.value.startDate == planStartDate.value) return
-
-  try {
-    await axios.patch(
-      `${baseApiUrl}/plans/update/${route.params.id}`,
-      {
-        startDate: plan.value.startDate,
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${loginStore.jsonWebToken}`,
-        },
-      },
-    )
-  } catch (e) {
-    console.log(e)
-  }
+  await planService.updatePlanStartDate(route.params.id, planStartDate.value);
 }
 
 const updatePlanFinalDate = async () => {
   if (plan.value.finalDate == planFinalDate.value) return
-
-  try {
-    await axios.patch(
-      `${baseApiUrl}/plans/update/${route.params.id}`,
-      {
-        finalDate: plan.value.finalDate,
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${loginStore.jsonWebToken}`,
-        },
-      },
-    )
-  } catch (e) {
-    console.log(e)
-  }
+  await planService.updatePlanFinalDate(route.params.id, planFinalDate.value);
 }
 
 const updatePlanInitialCapital = async () => {
   if (plan.value.initialCapital === planInitialCapital.value) return
+  await planService.updatePlanInitialCapital(route.params.id, planInitialCapital.value);
+}
 
-  try {
-    await axios.patch(
-      `${baseApiUrl}/plans/update/${route.params.id}`,
-      {
-        initialCapital: plan.value.initialCapital,
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${loginStore.jsonWebToken}`,
-        },
-      },
-    )
-  } catch (e) {
-    console.log(e)
-  }
+const deletePlan = async (id) => {
+  const userResponse = confirm('Tem certeza que deseja excluír esse plano? ')
+  if (!userResponse) return;
+
+  await planService.deletePlan(id);
+  alert('plano excluído com sucesso!')
+  await planStore.getPlans();
+  redirectToPlanRoute();
 }
 
 onMounted(() => {
