@@ -1,9 +1,9 @@
 <script setup>
 import NewPlanModal from '@/components/NewPlanModal.vue';
-// import axios from 'axios';
 import { onMounted, onUnmounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { usePlanStore } from '@/stores/planStore';
+import planService from '@/services/planService';
 
 const router = useRouter();
 const planStore = usePlanStore();
@@ -27,7 +27,7 @@ const showPlanDetail = (plan) => {
 
 const handleModalClose = async () => {
   toggleVisibility(false);
-  await planStore.getPlans();
+  await planService.fetchAllPlans();
 }
 
 const  toggleVisibility = (visibility) => {
@@ -36,7 +36,7 @@ const  toggleVisibility = (visibility) => {
 
 onMounted(async () => {
   document.addEventListener('click', handleDocumentClick);
-  await planStore.getPlans();
+  await planService.fetchAllPlans();
 });
 
 onUnmounted(() => {

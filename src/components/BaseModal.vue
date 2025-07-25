@@ -8,6 +8,7 @@
 </template>    
 
 <style scoped>
+
 .modal {
 position: relative;
 display: flex;

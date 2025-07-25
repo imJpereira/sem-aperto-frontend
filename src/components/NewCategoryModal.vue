@@ -2,11 +2,7 @@
 import { ref } from 'vue';
 import BaseModal from './BaseModal.vue';
 import { useModal } from '@/composables/useModal';
-import axios from 'axios';
-import { useLoginStore } from '@/stores/loginStore';
-
-const baseApiUrl = import.meta.env.VITE_API_BASE_URL;
-const loginStore = useLoginStore();
+import categoryService from '@/services/categoryService';
 
 const description = ref("");
 const targetValue = ref("");
@@ -23,29 +19,22 @@ const props = defineProps({
 
 const isFormValid = () => description.value && targetValue.value && targetValue.value > 0;
 
-const createCategory = async() => {
-    alert(await categoryPostRequest());
+const handleSubmit = async() => {
+    alert(await createCategory());
     closeModal();
 }
 
-const categoryPostRequest = async () => {
+const createCategory = async () => {
     if (description.value ==  "") return "Descrição Inválida";
     if (targetValue.value <= 0 ) return "Valor inválido";
 
-    try {
-        await axios.post(`${baseApiUrl}/categories/create/plan/${props.planId}`, {
-            description: description.value,
-            targetValue: targetValue.value
-        }, {
-            headers: {
-                Authorization: `Bearer ${loginStore.jsonWebToken}`
-            }
-        });
-        return "Categoria criada com sucesso"
-    } catch(e) {
-        console.log(e);
-    }
+    const response = await categoryService.createCategory(props.planId, {
+        description: description.value,
+        targetValue: targetValue.value,
+        planId: props.planId
+    });
 
+    return response.status >= 200 ? "Categoria criada com sucesso!" : "Erro ao criar categoria";
 }
 
 </script>
@@ -53,7 +42,7 @@ const categoryPostRequest = async () => {
 <template>
     <BaseModal>
         <img class="close" @click="closeModal()" width="20" height="20" src="../assets/icons/cancel-white.svg" alt="cancelar">
-        <form action="POST" @submit.prevent="createCategory()">
+        <form action="POST" @submit.prevent="handleSubmit()">
             <div>
                 <label for="">Descrição</label>
                 <input v-model="description" class="form-control" type="text">

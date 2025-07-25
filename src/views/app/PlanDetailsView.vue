@@ -1,19 +1,15 @@
 <script setup>
 import NewCategoryModal from '@/components/NewCategoryModal.vue'
-import { formatDate, formatValue, getCategoriesByPlanId } from '@/assets/functions/functions'
-import axios from 'axios'
+import { formatDate, formatValue } from '@/assets/functions/functions'
 import { onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { usePlanStore } from '@/stores/planStore'
-import { useLoginStore } from '@/stores/loginStore'
 import Category from '@/components/Category.vue'
 import planService from '@/services/planService'
+import categoryService from '@/services/categoryService'
+import expensesService from '@/services/expensesService'
 
-const baseApiUrl = import.meta.env.VITE_API_BASE_URlL
 const route = useRoute()
 const router = useRouter()
-const planStore = usePlanStore()
-const loginStore = useLoginStore()
 
 const plan = ref([])
 
@@ -44,13 +40,8 @@ const toggleVisibility = (visibility) => {
 }
 
 const showCategories = async () => {
-  try {
-    categories.value = await getCategoriesByPlanId(route.params.id)
-    getCategoryTotals()
-  } catch (e) {
-    console.log(e)
-  }
-
+  categories.value = await categoryService.fetchAllCategoriesByPlan(route.params.id);
+  getCategoryTotals();
   selectedCategory.value = categories.value[0].categoryId;
 }
 
@@ -66,16 +57,7 @@ const getCategoryTotals = () => {
 }
 
 const showCategoryExpenses = async (categoryId) => {
-  try {
-    categoryExpenses.value = await axios(`${baseApiUrl}/expenses/category/${categoryId}`, {
-      headers: {
-        Authorization: `Bearer ${loginStore.jsonWebToken}`,
-      },
-    })
-    categoryExpenses.value = categoryExpenses.value.data
-  } catch (e) {
-    console.log(e)
-  }
+  categoryExpenses.value = await expensesService.fetchAllByCategory(categoryId);
 }
 
 const findPlan = async () => {
@@ -83,23 +65,24 @@ const findPlan = async () => {
 }
 
 const updatePlanTitle = async () => {
-  if (plan.value.title == planTitle.value) return;
-  await planService.updatePlanTitle(route.params.id, planTitle.value);
+  if (plan.value.title === planTitle.value) return;
+  await planService.updatePlan(route.params.id, { title: plan.value.title});
 }
 
 const updatePlanStartDate = async () => {
-  if (plan.value.startDate == planStartDate.value) return
-  await planService.updatePlanStartDate(route.params.id, planStartDate.value);
+  if (plan.value.startDate === planStartDate.value) return
+  await planService.updatePlan(route.params.id, { startDate: plan.value.startDate});
 }
 
 const updatePlanFinalDate = async () => {
-  if (plan.value.finalDate == planFinalDate.value) return
-  await planService.updatePlanFinalDate(route.params.id, planFinalDate.value);
+  if (plan.value.finalDate === planFinalDate.value) return
+  await planService.updatePlan(route.params.id, { finalDate: plan.value.finalDate});
 }
 
 const updatePlanInitialCapital = async () => {
-  if (plan.value.initialCapital === planInitialCapital.value) return
-  await planService.updatePlanInitialCapital(route.params.id, planInitialCapital.value);
+  console.log(planInitialCapital.value);
+  if (plan.value.initialCapital === planInitialCapital.value) return;
+  await planService.updatePlan(route.params.id, { initialCapital: plan.value.initialCapital});
 }
 
 const deletePlan = async (id) => {
@@ -108,7 +91,7 @@ const deletePlan = async (id) => {
 
   await planService.deletePlan(id);
   alert('plano excluído com sucesso!')
-  await planStore.getPlans();
+  await planService.fetchAllPlans();
   redirectToPlanRoute();
 }
 

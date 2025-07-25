@@ -1,13 +1,13 @@
 <script setup>
 import axios from 'axios'
 import { onMounted, ref } from 'vue'
-import { formatDate, formatValue, getCategoriesByPlanId } from '@/assets/functions/functions'
+import { formatDate, formatValue } from '@/assets/functions/functions'
 import { usePlanStore } from '@/stores/planStore'
 import { useLoginStore } from '@/stores/loginStore'
+import categoryService from '@/services/categoryService'
+import expensesService from '@/services/expensesService'
 
-const baseApiUrl = import.meta.env.VITE_API_BASE_URL;
 const planStore = usePlanStore()
-const loginStore = useLoginStore();
 
 const defaultDate = new Date().toISOString().split('T')[0]
 
@@ -22,37 +22,23 @@ const expenseCategory = ref(null)
 
 const createExpense = async (event) => {
   event.preventDefault()
+  let msg;
 
-  if (expenseValue.value <= 0 || isNaN(expenseValue.value)) {
-    alert('Informe um valor');""
+  if (expenseValue.value <= 0 || isNaN(expenseValue.value)) msg += 'Informe um valor\n';
+  if (!expensePlan.value) msg += 'Informe um plano\n';
+
+  if (msg) {
+    alert(msg);
     return;
   }
 
-  if (!expensePlan.value) {
-    alert('Informe um plano')
-    return;
-  }
-
-  try {
-    await axios.post(`${baseApiUrl}/expenses/create`, {
-      plan: expensePlan.value,
-      category: expenseCategory.value,
-      value: expenseValue.value,
-      expenseDate: expenseDate.value,
-      description: expenseDescription.value,
-    },
-    {
-      headers: {
-        Authorization: `Bearer ${loginStore.jsonWebToken}`
-      }
-    })
-  } catch (e) {
-    //fazer componente de mensagem de erro
-    alert(e.message)
-    return
-  }
-
-  //fazer componenente de sucesso
+  await expensesService.createExpense({
+    planId: expensePlan.value,
+    category: expenseCategory.value,
+    value: expenseValue.value,
+    expenseDate: expenseDate.value,
+    description: expenseDescription.value,
+  });
 
   showExpenses()
 
@@ -61,36 +47,29 @@ const createExpense = async (event) => {
 }
 
 const showExpenses = async () => {
-  expenses.value = await axios.get(`${baseApiUrl}/expenses/all`,{
-    headers: {
-      Authorization: `Bearer ${loginStore.jsonWebToken}`
-    }
-  })
-  expenses.value = expenses.value.data
+  expenses.value = await expensesService.fetchAllExpenses();
 }
 
 const deleteExpense = async (expenseId) => {
   const userResponse = confirm('Tem certeza que deseja excluír essa despesa? ')
-  if (!userResponse) return
+  if (!userResponse) return;
 
-  const response = await axios.delete(`${baseApiUrl}/expenses/delete/${expenseId}`,{
-    headers: {
-      Authorization: `Bearer ${loginStore.jsonWebToken}`
-    }
-  })
-  if (response.status == 204) {
-    alert('Excluído com sucesso!')
-    showExpenses()
-    return
+  const response = await expensesService.deleteExpense(expenseId);
+  
+  if (response.status > 200) {
+    alert('Excluído com sucesso!');
+    showExpenses();
+  } else {
+    alert('Erro ao excluir despesa');
   }
-  alert('Erro ao excluir registro!')
 }
 
 const handlePlanBlur = async () => {
-  categories.value = await getCategoriesByPlanId(expensePlan.value);
+  categories.value = await categoryService.fetchAllCategoriesByPlan(expensePlan.value);
 }
 
-onMounted(showExpenses)
+onMounted(() => showExpenses())
+
 </script>
 
 <template>
@@ -183,14 +162,7 @@ onMounted(showExpenses)
       <p>{{ expense.category?.description }}</p>
       <p>{{ formatDate(expense.expenseDate) }}</p>
       <div class="d-flex justify-content-end">
-        <img
-          @click="deleteExpense(expense.expenseId)"
-          class="delete-expense-img"
-          src="../assets/icons/delete-reg-icon.svg"
-          alt="delete"
-          width="30px"
-          height="30px"
-        />
+        <i class="fa fa-trash text-danger" aria-hidden="true" @click="deleteExpense(expense.expenseId)"></i>
       </div>
     </div>
   </section>

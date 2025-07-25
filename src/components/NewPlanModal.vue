@@ -37,9 +37,8 @@ const createPlan = async () => {
         finalDate: finalDate.value,
         initialCapital: capital.value
     });
-    console.log(response.status);
-
-    return response.status === 201 ? "Plano criado com sucesso" : "Erro ao criar plano";
+    
+    return response.status >= 200 ? "Plano criado com sucesso" : "Erro ao criar plano";
 }
 </script>
 

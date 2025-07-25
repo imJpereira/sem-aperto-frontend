@@ -1,28 +1,13 @@
 import { useLoginStore } from "@/stores/loginStore";
-import { usePlanStore } from "@/stores/planStore";
 import api from "@/utils/api";
 
-const planService = {
-    createPlan: async (body) => {
+const expensesService = {
+
+    createExpense: async (body) => {
         const loginStore = useLoginStore();
 
         try {
-            const response = await api.post("/plans/create", body, {
-                headers: {
-                    Authorization: `Bearer ${loginStore.user.jsonWebToken}`
-                }
-            });
-            return response;
-        } catch (e) {
-            console.error(e);
-        }
-},
-
-    updatePlan: async (planId, body) => {
-        const loginStore = useLoginStore();
-
-        try {
-            const response = await api.patch(`/plans/update/${planId}`, body, {
+            const response = await api.post("/expenses/create", body, {
                 headers: {
                     Authorization: `Bearer ${loginStore.user.jsonWebToken}`
                 }
@@ -34,11 +19,11 @@ const planService = {
         }
     },
 
-    deletePlan: async (id) => {
+    updateExpense: async (expenseId, body) => {
         const loginStore = useLoginStore();
 
         try {
-            const response = await api.delete(`/plans/delete/${id}`, {
+            const response = await api.patch(`/expenses/update/${expenseId}`, body, {
                 headers: {
                     Authorization: `Bearer ${loginStore.user.jsonWebToken}`
                 }
@@ -50,29 +35,27 @@ const planService = {
         }
     },
 
-    fetchAllPlans: async () => {
+    deleteExpense: async (expenseId) => {
         const loginStore = useLoginStore();
-        const planStore = usePlanStore();
 
         try {
-            const response = await api.get("/plans/all", {
+            const response = await api.delete(`/expenses/delete/${expenseId}`, {
                 headers: {
                     Authorization: `Bearer ${loginStore.user.jsonWebToken}`
                 }
             });
 
-            planStore.plans = response.data;
-            return response.data;
+            return response;
         } catch (e) {
             console.error(e);
         }
     },
 
-    fetchPlanById: async (id) => {
+    fetchAllByCategory: async (categoryId) => {
         const loginStore = useLoginStore();
 
         try {
-            const response = await api.get(`/plans/${id}`, {
+            const response = await api.get(`/expenses/category/${categoryId}`, {
                 headers: {
                     Authorization: `Bearer ${loginStore.user.jsonWebToken}`
                 }
@@ -82,7 +65,23 @@ const planService = {
         } catch (e) {
             console.error(e);
         }
-    }
+    },
+
+    fetchAllExpenses: async () => {
+        const loginStore = useLoginStore();
+
+        try {
+            const response = await api.get("/expenses/all", {
+                headers: {
+                    Authorization: `Bearer ${loginStore.user.jsonWebToken}`
+                }
+            });
+
+            return response.data;
+        } catch (e) {
+            console.error(e);
+        }
+    },
 }
 
-export default planService;
+export default expensesService;

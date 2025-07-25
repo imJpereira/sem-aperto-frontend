@@ -1,10 +1,7 @@
 <script setup>
 import { formatValue } from '@/assets/functions/functions';
+import categoryService from '@/services/categoryService';
 import { useLoginStore } from '@/stores/loginStore';
-import axios from 'axios';
-
-const baseApiUrl = import.meta.env.VITE_API_BASE_URL;
-const loginStore = useLoginStore();
 
 const props = defineProps({
     showCategories: Function,
@@ -16,19 +13,15 @@ const deleteCategory = async (categoryId) => {
   const userResponse = confirm('Tem certeza que deseja excluír essa despesa? ')
   if (!userResponse) return
 
-  try {
-    await axios.delete(`${baseApiUrl}/categories/delete/${categoryId}`, {
-      headers: {
-        Authorization: `Bearer ${loginStore.jsonWebToken}`,
-      },
-    })
-    alert('deletado com sucesso');
-    
+  const response = await categoryService.deleteCategory(categoryId);
+
+  if (response.status >= 200) {
+    alert('Categoria excluída com sucesso');
     props.showCategories();
-    return
-  } catch (e) {
-    console.log(e)
+    return;
   }
+
+  alert('Erro ao excluir categoria');
 }
 
 const isBaseCategory = (type) => {
