@@ -1,16 +1,11 @@
 <script setup>
-import axios from 'axios';
 import { ref, defineEmits } from 'vue';
 import BaseModal from './BaseModal.vue';
 import { useModal } from '@/composables/useModal';
-import { useLoginStore } from '@/stores/loginStore';
 import planService from '@/services/planService';
 
-const baseApiUrl = import.meta.env.VITE_API_BASE_URL;
 const emit = defineEmits(["close"]);
 const { closeModal } = useModal(emit);
-
-const loginStore = useLoginStore();
 
 const title = ref("");
 const startDate = ref("");
@@ -19,7 +14,8 @@ const capital = ref("");
 
 const isFormValid = () => title.value && startDate.value && finalDate.value && capital.value;
 
-const handleSubmit = async () => {
+const handleSubmit = async (event) => {
+    event.preventDefault();
     alert(await createPlan()); 
     closeModal();
 }
@@ -44,7 +40,7 @@ const createPlan = async () => {
 
 <template>
     
-<BaseModal>
+<BaseModal class="new-plan-modal">
     <img class="close" @click="closeModal()" width="20" height="20" src="../assets/icons/cancel-white.svg" alt="cancelar">
     <form action="POST" @submit.prevent="handleSubmit()">
         <div>
@@ -72,6 +68,11 @@ const createPlan = async () => {
 </template>
 
 <style scoped>
+
+.new-plan-modal {
+        top: 40%;
+        left: 10%;
+    }
 
 form {
     gap: 1rem;

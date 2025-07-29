@@ -48,14 +48,7 @@ const isSelected = (categoryId) => {
         <p>{{ formatValue(category.actualValue) }}</p>
         <p>{{ formatValue(category.targetValue - category.actualValue) }}</p>
         <div class="d-flex justify-content-end">
-            <img
-                @click="deleteCategory(category.categoryId)"
-                class="delete-category-img"
-                src="../assets/icons/delete-reg-icon.svg"
-                alt="delete"
-                width="30px"
-                height="30px"
-            />
+            <i class="fa fa-trash text-danger" aria-hidden="true" @click="deleteCategory(category.categoryId)"></i>
         </div>
     </div>
 </template>
@@ -84,6 +77,10 @@ const isSelected = (categoryId) => {
 
   .selected {
     background-color: #c0dbd1;
+  }
+
+  p, i {
+    padding: 0.3rem;
   }
 
 </style>

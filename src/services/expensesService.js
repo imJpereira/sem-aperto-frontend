@@ -13,6 +13,7 @@ const expensesService = {
                 }
             });
 
+            console.log(response);
             return response;
         } catch (e) {
             console.error(e);

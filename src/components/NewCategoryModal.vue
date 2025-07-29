@@ -19,7 +19,8 @@ const props = defineProps({
 
 const isFormValid = () => description.value && targetValue.value && targetValue.value > 0;
 
-const handleSubmit = async() => {
+const handleSubmit = async(event) => {
+    event.preventDefault();
     alert(await createCategory());
     closeModal();
 }
@@ -40,7 +41,7 @@ const createCategory = async () => {
 </script>
 
 <template>
-    <BaseModal>
+    <BaseModal class="new-category-modal">
         <img class="close" @click="closeModal()" width="20" height="20" src="../assets/icons/cancel-white.svg" alt="cancelar">
         <form action="POST" @submit.prevent="handleSubmit()">
             <div>
@@ -59,6 +60,11 @@ const createCategory = async () => {
 </template>
 
 <style scoped>
+    .new-category-modal {
+        top: 40%;
+        left: 10%;
+    }
+
     form {
         gap: 1rem;
     }

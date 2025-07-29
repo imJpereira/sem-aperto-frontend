@@ -1,7 +1,9 @@
 <script setup>
 import { RouterLink, RouterView, useRoute } from 'vue-router'
+import { useLoginStore } from './stores/loginStore';
 
 const route = useRoute();
+const loginStore = useLoginStore();
 
 const isActive = (path) => {
   return path === route.path;
@@ -28,7 +30,7 @@ const toggleMenuHamburger = () => {
 
     <aside id="main-menu" class="main-menu">
       <div class="main-menu-profile">
-        <h1>Nome</h1>
+        <h1>Olá, {{ loginStore.user.username }}</h1>
       </div>
       <nav class="main-menu-content">
         <ul>

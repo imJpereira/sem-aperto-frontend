@@ -1,50 +1,13 @@
 <script setup>
-import axios from 'axios'
-import { onMounted, ref } from 'vue'
+import NewExpenseModal from '@/components/NewExpenseModal.vue'
+import { onMounted, onUnmounted, ref } from 'vue'
 import { formatDate, formatValue } from '@/assets/functions/functions'
-import { usePlanStore } from '@/stores/planStore'
-import { useLoginStore } from '@/stores/loginStore'
-import categoryService from '@/services/categoryService'
 import expensesService from '@/services/expensesService'
 
-const planStore = usePlanStore()
+const modalVisible = ref(false);
+const modal = ref(null);
 
-const defaultDate = new Date().toISOString().split('T')[0]
-
-const categories = ref([])
-const expenses = ref([])
-
-const expenseValue = ref(null)
-const expenseDate = ref(defaultDate)
-const expenseDescription = ref(null)
-const expensePlan = ref(null)
-const expenseCategory = ref(null)
-
-const createExpense = async (event) => {
-  event.preventDefault()
-  let msg;
-
-  if (expenseValue.value <= 0 || isNaN(expenseValue.value)) msg += 'Informe um valor\n';
-  if (!expensePlan.value) msg += 'Informe um plano\n';
-
-  if (msg) {
-    alert(msg);
-    return;
-  }
-
-  await expensesService.createExpense({
-    planId: expensePlan.value,
-    category: expenseCategory.value,
-    value: expenseValue.value,
-    expenseDate: expenseDate.value,
-    description: expenseDescription.value,
-  });
-
-  showExpenses()
-
-  expenseValue.value = null
-  expenseDescription.value = null
-}
+const expenses = ref([]);
 
 const showExpenses = async () => {
   expenses.value = await expensesService.fetchAllExpenses();
@@ -64,90 +27,48 @@ const deleteExpense = async (expenseId) => {
   }
 }
 
-const handlePlanBlur = async () => {
-  categories.value = await categoryService.fetchAllCategoriesByPlan(expensePlan.value);
+const handleDocumentClick = (e) => {
+  if (e.target.classList.contains('btn-success')) return;
+
+  const modalElement = modal.value?.$el;
+  if (!modalElement?.contains(e.target)) toggleVisibility(false);
 }
 
-onMounted(() => showExpenses())
+const handleModalClose = () => {
+  toggleVisibility(false);
+  showExpenses();
+}
+
+const toggleVisibility = (visibility) => {
+  modalVisible.value = visibility;
+}
+
+onMounted(async () => {
+  document.addEventListener('click', handleDocumentClick);
+  showExpenses()
+});
+
+onUnmounted(() => {
+  document.removeEventListener('click', handleDocumentClick);
+})
 
 </script>
 
 <template>
+  
+  <NewExpenseModal 
+    v-if="modalVisible"
+    ref="modal" 
+    @close="handleModalClose" 
+  />
+  
   <header>
     <h1>Despesas</h1>
   </header>
-
-  <section class="form-container tab-content">
-    <form @submit.prevent="createExpense">
-      <div class="mb-3 date">
-        <label for="expense_date">Data</label>
-        <input
-          v-model="expenseDate"
-          id="expense_date"
-          name="expense_date"
-          type="date"
-          class="form-control"
-        />
-      </div>
-
-      <div class="mb-3 value">
-        <label for="expense_value">Valor</label>
-        <input
-          v-model="expenseValue"
-          id="expense_value"
-          name="expense_value"
-          type="number"
-          step="0.01"
-          class="form-control"
-        />
-      </div>
-
-      <div class="mb-3 plan">
-        <label for="expense_plan">Plano</label>
-        <select 
-          v-model="expensePlan" 
-          id="expense_plan" 
-          name="expense_plan" 
-          class="form-select"
-          @blur="handlePlanBlur()"
-          @change="expenseCategory = ''"
-          >
-          <option v-for="plan in planStore.plans" :key="plan.id" :value="plan.planId">
-            {{ plan.title }}
-          </option>
-        </select>
-      </div>
-
-      <div class="mb-3 category">
-        <label for="expense_category">Categoria</label>
-        <select
-          v-model="expenseCategory"
-          id="expense_category"
-          name="expense_category"
-          class="form-select" 
-          >
-          <option v-for="category in categories" :key="category.id" :value="category.categoryId">
-            {{ category.description }}
-          </option>
-        </select>
-      </div>
-
-      <div class="mb-3 description">
-        <label for="expense_description">Descrição</label>
-        <input
-          v-model="expenseDescription"
-          id="expense_description"
-          name="expense_description"
-          type="text"
-          class="form-control"
-        />
-      </div>
-
-      <div class="w-100 d-flex justify-content-center">
-        <button class="btn btn-success btn-lg" type="submit">Adicionar</button>
-      </div>
-    </form>
-  </section>
+   
+  <div class="w-100 d-flex justify-content-center">
+    <button class="btn btn-success btn-lg" type="submit" @click="toggleVisibility(true)">Adicionar Despesa</button>
+  </div>
 
   <section class="tab-content">
     <div class="grid border-bottom border-dark pb-2">
@@ -170,16 +91,6 @@ onMounted(() => showExpenses())
 
 <style scoped>
 
-.form-container form > :nth-child(1),
-.form-container form > :nth-child(2),
-.form-container form > :nth-child(3),
-.form-container form > :nth-child(4) {
-  flex-grow: 1;
-}
-
-.form-container form > :nth-child(5) {
-  width: 100%;
-}
 
 .delete-expense-img {
   cursor: pointer;

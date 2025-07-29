@@ -95,9 +95,9 @@ const deletePlan = async (id) => {
   redirectToPlanRoute();
 }
 
-onMounted(() => {
-  findPlan()
-  showCategories()
+onMounted(async () => {
+  await findPlan()
+  await showCategories()
 })
 </script>
 
