@@ -1,12 +1,14 @@
 <script setup>
-import NewCategoryModal from '@/components/NewCategoryModal.vue'
+import NewCategoryModal from '@/components/modal/NewCategoryModal.vue'
 import { formatDate, formatValue } from '@/assets/functions/functions'
-import { onMounted, ref } from 'vue'
+import { onBeforeMount, onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import Category from '@/components/Category.vue'
 import planService from '@/services/planService'
 import categoryService from '@/services/categoryService'
 import expensesService from '@/services/expensesService'
+import SimpleInfoCard from '@/components/infoCards/SimpleInfoCard.vue'
+import DateInfoCard from '@/components/infoCards/DateInfoCard.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -14,7 +16,6 @@ const router = useRouter()
 const plan = ref([])
 
 const planTitle = ref('')
-const planInitialCapital = ref('')
 const planStartDate = ref('')
 const planFinalDate = ref('')
 
@@ -25,6 +26,7 @@ const selectedCategory = ref(null);
 const categoryExpenses = ref([])
 
 const modalVisible = ref(false)
+const isLoading = ref(false);
 
 const redirectToPlanRoute = () => {
   router.push({ name: 'Plan' })
@@ -62,6 +64,7 @@ const showCategoryExpenses = async (categoryId) => {
 
 const findPlan = async () => {
   plan.value = await planService.fetchPlanById(route.params.id);
+  console.log(plan.value.initialCapital);
 }
 
 const updatePlanTitle = async () => {
@@ -69,9 +72,9 @@ const updatePlanTitle = async () => {
   await planService.updatePlan(route.params.id, { title: plan.value.title});
 }
 
-const updatePlanStartDate = async () => {
-  if (plan.value.startDate === planStartDate.value) return
-  await planService.updatePlan(route.params.id, { startDate: plan.value.startDate});
+const updatePlanStartDate = async (newDate) => {
+  if (plan.value.startDate === newDate) return
+  await planService.updatePlan(route.params.id, { startDate: newDate });
 }
 
 const updatePlanFinalDate = async () => {
@@ -79,10 +82,8 @@ const updatePlanFinalDate = async () => {
   await planService.updatePlan(route.params.id, { finalDate: plan.value.finalDate});
 }
 
-const updatePlanInitialCapital = async () => {
-  console.log(planInitialCapital.value);
-  if (plan.value.initialCapital === planInitialCapital.value) return;
-  await planService.updatePlan(route.params.id, { initialCapital: plan.value.initialCapital});
+const updatePlanInitialCapital = async (newValue) => {
+  await planService.updatePlan(route.params.id, { initialCapital: newValue });
   await showCategories();
 }
 
@@ -97,9 +98,12 @@ const deletePlan = async (id) => {
 }
 
 onMounted(async () => {
-  await findPlan()
-  await showCategories()
+  isLoading.value = true;
+  await findPlan();
+  await showCategories();
+  isLoading.value = false;
 })
+
 </script>
 
 <template>
@@ -122,48 +126,29 @@ onMounted(async () => {
       </div>
       <button @click="deletePlan(plan.planId)" class="btn btn-danger btn-large">
         Excluir Plano
-      </button>
+      </button> 
     </header>
 
     <div class="plan-info-container">
-      <div class="plan-info">
-        <label for="">Capital: </label>
-        <div class="input-container">
-          <input
-            v-model="plan.initialCapital"
-            class="no-input"
-            type="text"
-            @focus="planInitialCapital = plan.initialCapital"
-            @blur="updatePlanInitialCapital()"
-          />
-        </div>
-      </div>
+      <SimpleInfoCard 
+        v-if="!isLoading"
+        :inputValue="plan.initialCapital" 
+        :label="'Capital Inicial'"
+        :onBlur="updatePlanInitialCapital" 
+      />
+      <DateInfoCard 
+        v-if="!isLoading"
+        :inputValue="plan.startDate" 
+        :label="'Data Inicial'"
+        :onBlur="updatePlanStartDate"
+      />
+      <DateInfoCard 
+        v-if="!isLoading"
+        :inputValue="plan.finalDate" 
+        :label="'Data Final'"
+        :onBlur="updatePlanFinalDate"
+      />
 
-      <div class="plan-info">
-        <label for="">Data Inicial:</label>
-        <div class="input-container">
-          <input
-            v-model="plan.startDate"
-            class="no-input"
-            type="date"
-            @focus="planStartDate = plan.startDate"
-            @blur="updatePlanStartDate()"
-          />
-        </div>
-      </div>
-
-      <div class="plan-info">
-        <label for="">Data Final:</label>
-        <div class="input-container">
-          <input
-            v-model="plan.finalDate"
-            class="no-input"
-            type="date"
-            @focus="planFinalDate = plan.finalDate"
-            @blur="updatePlanFinalDate()"
-          />
-        </div>
-      </div>
     </div>
 
     <div class="py-2">
@@ -254,24 +239,6 @@ header {
   /* background-color: grey; */
 }
 
-.no-input {
-  background: none;
-  border: none;
-  /* border-bottom: 1px solid rgb(221, 221, 221); */
-  padding: 0.5rem;
-  /* color: white; */
-  outline: none;
-  font-weight: 500;
-}
-
-.no-input:hover {
-  background-color: rgb(250, 250, 250);
-}
-
-.no-input:focus {
-  background-color: rgb(250, 250, 250);
-}
-
 .h1-input {
   font-size: 30px;
 }
@@ -281,11 +248,6 @@ header {
   height: 40px;
 }
 
-.no-input:disabled {
-  color: inherit;
-  opacity: 1;
-  background-color: transparent;
-}
 
 .input-icon {
   position: absolute;
@@ -299,8 +261,8 @@ header {
 
 .plan-info-container {
   display: flex;
-  gap: 10rem;
-  /* background-color: blue; */
+  flex-direction: flex-start;
+  gap: 1rem;
   padding: 1rem 0 2rem 0;
 }
 

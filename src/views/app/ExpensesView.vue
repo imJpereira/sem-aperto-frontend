@@ -1,5 +1,5 @@
 <script setup>
-import NewExpenseModal from '@/components/NewExpenseModal.vue'
+import NewExpenseModal from '@/components/modal/NewExpenseModal.vue'
 import { onMounted, onUnmounted, ref } from 'vue'
 import { formatDate, formatValue } from '@/assets/functions/functions'
 import expensesService from '@/services/expensesService'

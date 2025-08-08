@@ -1,5 +1,5 @@
 <script setup>
-import NewPlanModal from '@/components/NewPlanModal.vue';
+import NewPlanModal from '@/components/modal/NewPlanModal.vue';
 import { onMounted, onUnmounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { usePlanStore } from '@/stores/planStore';
