@@ -19,8 +19,7 @@ const props = defineProps({
 
 const isFormValid = () => description.value && targetValue.value && targetValue.value > 0;
 
-const handleSubmit = async(event) => {
-    event.preventDefault();
+const handleSubmit = async() => {
     alert(await createCategory());
     closeModal();
 }

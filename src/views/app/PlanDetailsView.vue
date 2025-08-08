@@ -83,6 +83,7 @@ const updatePlanInitialCapital = async () => {
   console.log(planInitialCapital.value);
   if (plan.value.initialCapital === planInitialCapital.value) return;
   await planService.updatePlan(route.params.id, { initialCapital: plan.value.initialCapital});
+  await showCategories();
 }
 
 const deletePlan = async (id) => {
@@ -180,7 +181,7 @@ onMounted(async () => {
         <div>
           <Category 
             v-for="category in categories"
-            :key="category.id"
+            :key="category.id"  
             @click="showCategoryExpenses(category.categoryId); selectedCategory = category.categoryId"
             :selected="selectedCategory"
             :category="category"
@@ -322,12 +323,15 @@ header {
 
 .categories {
   flex-grow: 1;
+  width: 100%;
   background-color: #f9f9f9;
   padding: 1rem;
   border-radius: 10px;
 }
 
 .category-expenses {
+  flex-grow: 1;
+  width: 100%;
   background-color: #f9f9f9;
   min-width: 40%;
   padding: 1rem;

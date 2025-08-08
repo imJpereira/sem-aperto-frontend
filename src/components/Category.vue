@@ -44,7 +44,7 @@ const isSelected = (categoryId) => {
       @click="selectedCategory = category.categoryId"
       >
         <p>{{ category.description }}</p>
-        <p>{{ formatValue(category.targetValue) }}</p>
+        <input type="text" v-model="category.targetValue"></input>
         <p>{{ formatValue(category.actualValue) }}</p>
         <p>{{ formatValue(category.targetValue - category.actualValue) }}</p>
         <div class="d-flex justify-content-end">
@@ -81,6 +81,14 @@ const isSelected = (categoryId) => {
 
   p, i {
     padding: 0.3rem;
+  }
+
+  .grid input {
+    width: 100%;
+    border: none;
+    padding: 0.3rem;
+    background-color: transparent;
+    outline: none;
   }
 
 </style>
