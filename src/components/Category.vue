@@ -1,13 +1,19 @@
 <script setup>
 import { formatValue } from '@/assets/functions/functions';
 import categoryService from '@/services/categoryService';
-import { useLoginStore } from '@/stores/loginStore';
+import { ref, watch } from 'vue';
 
 const props = defineProps({
     showCategories: Function,
     category: Object, 
     selected: String
 });
+
+const emit = defineEmits(["updated"]);
+
+const description = ref(props.category.description);
+const targetValue = ref(props.category.targetValue);
+
 
 const deleteCategory = async (categoryId) => {
   const userResponse = confirm('Tem certeza que deseja excluír essa despesa? ')
@@ -32,6 +38,39 @@ const isSelected = (categoryId) => {
   return categoryId === props.selected;
 }
 
+const updateCategoryDescription = async (categoryId, description) => {
+  if (description === props.category.description) return;
+
+  const response = await categoryService.updateCategory(categoryId, { description });
+  emit("updated");
+
+  if (response.status > 300 || response.status < 200) {
+    alert('Erro ao atualizar categoria');
+    return;
+  }
+}
+
+const updateCategoryTargetValue = async (categoryId, targetValue) => {
+  if (targetValue === props.category.targetValue) return;
+
+  const response = await categoryService.updateCategory(categoryId, { targetValue });
+
+  console.log("category component");
+
+  emit("updated");
+
+  if (response.status > 300 || response.status < 200) {
+    alert('Erro ao atualizar categoria');
+    return;
+  }
+}
+
+watch(() => props.category, (newVal) => {
+  description.value = newVal.description;
+  targetValue.value = newVal.targetValue;
+});
+
+
 </script>
 
 <template>
@@ -43,8 +82,16 @@ const isSelected = (categoryId) => {
       }"
       @click="selectedCategory = category.categoryId"
       >
-        <p>{{ category.description }}</p>
-        <input type="text" v-model="category.targetValue"></input>
+        <input 
+          type="text"
+          v-model="description"
+          @blur="updateCategoryDescription(category.categoryId, description)"
+        />
+        <input 
+          type="text"
+          v-model="targetValue"
+          @blur="updateCategoryTargetValue(category.categoryId , targetValue)"
+        />
         <p>{{ formatValue(category.actualValue) }}</p>
         <p>{{ formatValue(category.targetValue - category.actualValue) }}</p>
         <div class="d-flex justify-content-end">

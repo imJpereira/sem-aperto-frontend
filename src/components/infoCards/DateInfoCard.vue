@@ -1,6 +1,5 @@
 <script setup>
-import { ref } from 'vue';
-
+import { ref, watch } from 'vue';
 
 const props = defineProps({
   inputValue: {
@@ -23,6 +22,10 @@ const handleBlur = () => {
   if (inputValue.value === props.inputValue) return;  
   props.onBlur(inputValue.value);
 };
+
+watch(() => props.inputValue, (newVal) => {
+  inputValue.value = newVal;
+});
 
 </script>
 

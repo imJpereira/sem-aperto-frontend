@@ -14,11 +14,10 @@ const capital = ref("");
 
 const isFormValid = () => title.value && startDate.value && finalDate.value && capital.value;
 
-const handleSubmit = async (event) => {
-    event.preventDefault();
+const handleSubmit = async () => {
     alert(await createPlan()); 
     closeModal();
-}
+}   
 
 const createPlan = async () => {
     if (!title.value) return "Título inválido";

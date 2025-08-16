@@ -1,7 +1,7 @@
 <script setup>
 import NewCategoryModal from '@/components/modal/NewCategoryModal.vue'
 import { formatDate, formatValue } from '@/assets/functions/functions'
-import { onBeforeMount, onMounted, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import Category from '@/components/Category.vue'
 import planService from '@/services/planService'
@@ -15,11 +15,9 @@ const router = useRouter()
 
 const plan = ref([])
 
-const planTitle = ref('')
-const planStartDate = ref('')
-const planFinalDate = ref('')
+const planTitleInput = ref('')
 
-const categoryTotals = {}
+// const categoryTotals = {}
 
 const categories = ref([])
 const selectedCategory = ref(null);
@@ -43,20 +41,20 @@ const toggleVisibility = (visibility) => {
 
 const showCategories = async () => {
   categories.value = await categoryService.fetchAllCategoriesByPlan(route.params.id);
-  getCategoryTotals();
+  console.log("show categories  " + JSON.stringify(categories.value));
   selectedCategory.value = categories.value[0].categoryId;
 }
 
-const getCategoryTotals = () => {
-  categoryTotals.targetValue = categories.value.reduce(
-    (sum, category) => sum + Number(category.targetValue),
-    0,
-  )
-  categoryTotals.actualValue = categories.value.reduce(
-    (sum, category) => sum + Number(category.actualValue),
-    0,
-  )
-}
+const categoryTotals = computed(() => {
+  return {
+    targetValue: categories.value.reduce(
+      (sum, c) => sum + Number(c.targetValue), 0
+    ),
+    actualValue: categories.value.reduce(
+      (sum, c) => sum + Number(c.actualValue), 0
+    )
+  }
+});
 
 const showCategoryExpenses = async (categoryId) => {
   categoryExpenses.value = await expensesService.fetchAllByCategory(categoryId);
@@ -68,7 +66,7 @@ const findPlan = async () => {
 }
 
 const updatePlanTitle = async () => {
-  if (plan.value.title === planTitle.value) return;
+  if (plan.value.title === planTitleInput.value) return;
   await planService.updatePlan(route.params.id, { title: plan.value.title});
 }
 
@@ -78,7 +76,6 @@ const updatePlanStartDate = async (newDate) => {
 }
 
 const updatePlanFinalDate = async () => {
-  if (plan.value.finalDate === planFinalDate.value) return
   await planService.updatePlan(route.params.id, { finalDate: plan.value.finalDate});
 }
 
@@ -118,9 +115,8 @@ onMounted(async () => {
       <div class="input-container">
         <input
           v-model="plan.title"
-          class="no-input h1-input"
+          class="plan-input h1-input"
           type="text"
-          @focus="planTitle = plan.title"
           @blur="updatePlanTitle()"
         />
       </div>
@@ -165,12 +161,14 @@ onMounted(async () => {
         </div>
         <div>
           <Category 
+            v-if="!isLoading"
             v-for="category in categories"
-            :key="category.id"  
-            @click="showCategoryExpenses(category.categoryId); selectedCategory = category.categoryId"
+            :key="category.categoryId"  
             :selected="selectedCategory"
             :category="category"
             :showCategories="showCategories"
+            @updated="showCategories"
+            @click="showCategoryExpenses(category.categoryId); selectedCategory = category.categoryId"
           />
         </div>
         <div class="grid pb-3">
