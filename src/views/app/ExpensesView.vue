@@ -1,5 +1,6 @@
 <script setup>
 import NewExpenseModal from '@/components/modal/NewExpenseModal.vue'
+import Expense from '@/components/grid-fields/Expense.vue'
 import { onMounted, onUnmounted, ref } from 'vue'
 import { formatDate, formatValue } from '@/assets/functions/functions'
 import expensesService from '@/services/expensesService'
@@ -11,20 +12,6 @@ const expenses = ref([]);
 
 const showExpenses = async () => {
   expenses.value = await expensesService.fetchAllExpenses();
-}
-
-const deleteExpense = async (expenseId) => {
-  const userResponse = confirm('Tem certeza que deseja excluír essa despesa? ')
-  if (!userResponse) return;
-
-  const response = await expensesService.deleteExpense(expenseId);
-  
-  if (response.status > 200) {
-    alert('Excluído com sucesso!');
-    showExpenses();
-  } else {
-    alert('Erro ao excluir despesa');
-  }
 }
 
 const handleDocumentClick = (e) => {
@@ -77,15 +64,12 @@ onUnmounted(() => {
       <p class="caption">Categoria</p>
       <p class="caption">Data</p>
     </div>
-    <div v-for="expense in expenses" :key="expense.id" class="grid border-bottom py-2">
-      <p>{{ expense.description }}</p>
-      <p>{{ formatValue(expense.value) }}</p>
-      <p>{{ expense.category?.description }}</p>
-      <p>{{ formatDate(expense.expenseDate) }}</p>
-      <div class="d-flex justify-content-end">
-        <i class="fa fa-trash text-danger" aria-hidden="true" @click="deleteExpense(expense.expenseId)"></i>
-      </div>
-    </div>
+    <Expense 
+      v-for="expense in expenses" 
+      :key="expense.expenseId" 
+      :expense="expense"
+      @updated="showExpenses" 
+    />
   </section>
 </template>
 

@@ -3,12 +3,12 @@ import NewCategoryModal from '@/components/modal/NewCategoryModal.vue'
 import { formatDate, formatValue } from '@/assets/functions/functions'
 import { computed, onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import Category from '@/components/Category.vue'
+import Category from '@/components/grid-fields/Category.vue'
 import planService from '@/services/planService'
 import categoryService from '@/services/categoryService'
 import expensesService from '@/services/expensesService'
-import SimpleInfoCard from '@/components/infoCards/SimpleInfoCard.vue'
-import DateInfoCard from '@/components/infoCards/DateInfoCard.vue'
+import SimpleInfoCard from '@/components/info-cards/SimpleInfoCard.vue'
+import DateInfoCard from '@/components/info-cards/DateInfoCard.vue'
 
 const route = useRoute()
 const router = useRouter()
