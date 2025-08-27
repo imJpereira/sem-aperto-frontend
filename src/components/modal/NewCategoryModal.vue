@@ -1,8 +1,10 @@
 <script setup>
-import { ref } from 'vue';
+import { onMounted, ref } from 'vue';
 import BaseModal from './BaseModal.vue';
 import { useModal } from '@/composables/useModal';
 import categoryService from '@/services/categoryService';
+import { formatValue, removeDots } from '@/assets/functions/functions';
+import SimpleInput from '../inputs/SimpleInput.vue';
 
 const description = ref("");
 const targetValue = ref("");
@@ -17,7 +19,11 @@ const props = defineProps({
   }
 });
 
-const isFormValid = () => description.value && targetValue.value && targetValue.value > 0;
+const isFormValid = () => {
+    console.log(description.value, targetValue.value);
+
+    return  description.value && targetValue.value && Number(targetValue.value) > 0;
+};
 
 const handleSubmit = async() => {
     alert(await createCategory());
@@ -30,7 +36,7 @@ const createCategory = async () => {
 
     const response = await categoryService.createCategory(props.planId, {
         description: description.value,
-        targetValue: targetValue.value,
+        targetValue: removeDots(targetValue.value),
         planId: props.planId
     });
 
@@ -41,16 +47,10 @@ const createCategory = async () => {
 
 <template>
     <BaseModal class="new-category-modal">
-        <img class="close" @click="closeModal()" width="20" height="20" src="../assets/icons/cancel-white.svg" alt="cancelar">
+        <button class="close" @click="closeModal()"><i class="fa-solid fa-x text-white" @click="closeModal()"></i></button>
         <form action="POST" @submit.prevent="handleSubmit()">
-            <div>
-                <label for="">Descrição</label>
-                <input v-model="description" class="form-control" type="text">
-            </div>
-            <div>
-                <label for="">Meta</label>
-                <input v-model="targetValue" class="form-control" type="text">
-            </div>
+            <SimpleInput v-model="description" label="Descrição" />
+            <SimpleInput v-model="targetValue" label="Meta" :decimal="true" />
             <div class="d-flex align-items-center justify-content-center">
                 <button class="btn btn-dark btn-lg" type="submit" :disabled="!isFormValid()">Criar</button>
             </div>

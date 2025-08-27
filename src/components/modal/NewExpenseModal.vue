@@ -5,6 +5,8 @@ import { ref } from 'vue';
 import { useModal } from '@/composables/useModal';
 import categoryService from '@/services/categoryService';
 import expensesService from '@/services/expensesService';
+import SimpleInput from '../inputs/SimpleInput.vue';
+import DateInput from '../inputs/DateInput.vue';
 
 const planStore = usePlanStore();
 
@@ -57,31 +59,12 @@ const handlePlanBlur = async () => {
 
 <template>  
     <BaseModal class="new-expense-modal">
-        <img class="close" @click="closeModal()" width="20" height="20" src="../assets/icons/cancel-white.svg" alt="cancelar">
+        <button class="close" @click="closeModal()"><i class="fa-solid fa-x text-white" @click="closeModal()"></i></button>
         <form @submit.prevent="handleSubmit">
-            <div class="mb-3 ">
-                <label for="expense_date">Data</label>
-                <input
-                v-model="expenseDate"
-                id="expense_date"
-                name="expense_date"
-                type="date"
-                class="form-control"
-                />
-            </div>
-
-            <div class="mb-3 value">
-                <label for="expense_value">Valor</label>
-                <input
-                v-model="expenseValue"
-                id="expense_value"
-                name="expense_value"
-                type="number"
-                step="0.01"
-                class="form-control"
-                />
-            </div>
-
+            
+            <DateInput v-model="expenseDate" label="Data" />
+            <SimpleInput v-model="expenseValue" label="Valor" :decimal="true" />
+    
             <div class="mb-3 plan">
                 <label for="expense_plan">Plano</label>
                 <select 
@@ -112,16 +95,7 @@ const handlePlanBlur = async () => {
                 </select>
             </div>
 
-            <div class="mb-3 description">
-                <label for="expense_description">Descrição</label>
-                <input
-                v-model="expenseDescription"
-                id="expense_description"
-                name="expense_description"
-                type="text"
-                class="form-control"
-                />
-            </div>
+            <SimpleInput v-model="expenseDescription" label="Descrição" />
 
             <div class="w-100 d-flex justify-content-center">
                 <button class="btn btn-success btn-lg" type="submit">Adicionar</button>

@@ -2,7 +2,6 @@
 import { useLoginStore } from '@/stores/loginStore';
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
-import { signUp, signIn } from '@/services/authService';
 
 const router = useRouter(); 
 const loginStore = useLoginStore();
@@ -24,10 +23,10 @@ const handleSignUp = async () => {
     }
 
     try {
-        const response = await signUp(username.value, email.value, password.value);
+        const response = await loginStore.signUp(username.value, email.value, password.value);
 
         if (response.status === 201) {
-            await signIn(username.value, password.value);
+            await loginStore.signIn(username.value, password.value);
 
             if (loginStore.user.jsonWebToken) {
                 router.push("/planos");

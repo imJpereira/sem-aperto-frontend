@@ -3,6 +3,8 @@ import { ref, defineEmits } from 'vue';
 import BaseModal from './BaseModal.vue';
 import { useModal } from '@/composables/useModal';
 import planService from '@/services/planService';
+import SimpleInput from '../inputs/SimpleInput.vue';
+import DateInput from '../inputs/DateInput.vue';
 
 const emit = defineEmits(["close"]);
 const { closeModal } = useModal(emit);
@@ -40,30 +42,18 @@ const createPlan = async () => {
 <template>
     
 <BaseModal class="new-plan-modal">
-    <img class="close" @click="closeModal()" width="20" height="20" src="../assets/icons/cancel-white.svg" alt="cancelar">
+    <button class="close" @click="closeModal()"><i class="fa-solid fa-x text-white" @click="closeModal()"></i></button>
     <form action="POST" @submit.prevent="handleSubmit()">
-        <div>
-            <label for="">Título</label>
-            <input v-model="title" class="form-control" type="text">
-        </div>
-        <div>
-            <label for="">Início</label>
-            <input v-model="startDate" class="form-control" type="date">
-        </div>
-        <div>
-            <label for="">Fim</label>
-            <input v-model="finalDate" class="form-control" type="date">
-        </div>
-        <div>
-            <label for="">Capital</label>
-            <input v-model="capital" class="form-control" type="number" step="0.01">
-        </div>
+        <SimpleInput v-model="title" label="Título" />
+        <DateInput v-model="startDate" label="Início" />
+        <DateInput v-model="finalDate" label="Fim" />
+        <SimpleInput v-model="capital" label="Capital" :decimal="true" />
         <div class="d-flex align-items-center justify-content-center">
             <button class="btn btn-dark btn-lg" type="submit" :disabled="!isFormValid()">Criar</button>
         </div>
     </form>
 </BaseModal>
-
+    
 </template>
 
 <style scoped>

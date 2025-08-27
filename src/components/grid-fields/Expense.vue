@@ -1,15 +1,16 @@
 <script setup>
-import { formatDate, formatValue } from '@/assets/functions/functions';
+import { formatDate, formatValue, removeDots } from '@/assets/functions/functions';
 import expensesService from '@/services/expensesService';
 import { ref, watch } from 'vue';
 
 const props = defineProps({
     expense: Object,
-    selected: String,
 });
 
 const expenseDescription = ref(props.expense.description);
+
 const expenseValue = ref(props.expense.value);
+const expoenseValueDisplay = ref(formatValue(props.expense.value));
 
 const emit = defineEmits(["updated"]);
 
@@ -53,27 +54,41 @@ const deleteExpense = async (expenseId) => {
     alert('Erro ao excluir despesa');
 }
 
+const handleBlur = () => {
+    if (expoenseValueDisplay.value === formatValue(props.expense.value)) return;
+
+    const cleanValue = expoenseValueDisplay.value.replace(/,/g, '.').replace(/[^0-9.]/g, '');
+    expenseValue.value = cleanValue;
+
+    updateExpenseValue(props.expense.expenseId, expenseValue.value);
+
+    const formatted = formatValue(cleanValue);
+    expoenseValueDisplay.value = formatted;
+};
+
 watch(() => props.expense, (newValue) => {
     expenseDescription.value = newValue.description;
-    expenseValue.value = newValue.value;
+    expoenseValueDisplay.value = formatValue(newValue.value);
 });
 
 </script>
 
 <template>
-    <div  class="grid border-bottom py-2">
+    <div  class="grid grid-cell">
         <input 
           type="text"
           v-model="expenseDescription"
           @blur="updateExpenseDescription(expense.expenseId, expenseDescription)"
         />
         <input type="text"
-          v-model="expenseValue"
-          @blur="updateExpenseValue(expense.expenseId, expenseValue)">
+          v-model="expoenseValueDisplay"
+          @blur="handleBlur()"
+          @focus="expoenseValueDisplay = removeDots(expoenseValueDisplay)"
+          >
         <p>{{ expense.category?.description }}</p>
         <p>{{ formatDate(expense.expenseDate) }}</p>
-        <div class="d-flex justify-content-end">
-            <i class="fa fa-trash text-danger" aria-hidden="true" @click="deleteExpense(expense.expenseId)"></i>
+        <div class="d-flex justify-content-end cursor-pointer" @click="deleteExpense(expense.expenseId)">
+            <i class="fa fa-trash text-danger" aria-hidden="true"></i>
         </div>
     </div>
 

@@ -20,6 +20,7 @@ const planService = {
 
     updatePlan: async (planId, body) => {
         const loginStore = useLoginStore();
+        console.log(body);
 
         try {
             const response = await api.patch(`/plans/update/${planId}`, body, {

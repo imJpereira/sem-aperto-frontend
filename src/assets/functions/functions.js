@@ -4,5 +4,18 @@ export const formatDate = (date) => {
 }
 
 export const formatValue = (value) => {
-    return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value);
+  if (value == null || value === '') return "0,00";
+
+  let numberValue = parseFloat(value.toString().replace(',', '.'));
+  if (isNaN(numberValue)) return "0,00";
+
+  return new Intl.NumberFormat('pt-BR', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  }).format(numberValue);
+}
+
+
+export const removeDots = (value) => {
+  return value.replace(/\./g, '');
 }

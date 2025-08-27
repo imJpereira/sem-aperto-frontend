@@ -1,5 +1,6 @@
 <script setup>
-import { ref, watch } from 'vue';
+import { removeDots, formatValue } from '@/assets/functions/functions';
+import { onMounted, ref, watch } from 'vue';
 
 const props = defineProps({
   inputValue: {
@@ -17,15 +18,31 @@ const props = defineProps({
 });
 
 const inputValue = ref(props.inputValue);
+const inputValueDisplay = ref(formatValue(props.inputValue));
 
 const handleBlur = () => {
-  if (inputValue.value === props.inputValue) return;  
+  if (inputValueDisplay.value === formatValue(props.inputValue)) return;
+
+  const cleanValue = inputValueDisplay.value.replace(/,/g, '.').replace(/[^0-9.]/g, '');
+  inputValue.value = cleanValue;
+
   props.onBlur(inputValue.value);
+
+  const formatted = formatValue(cleanValue);
+  inputValueDisplay.value = formatted;
 };
 
+const handleFocus = () => {
+    inputValueDisplay.value = removeDots(inputValueDisplay.value);
+}
 
 watch(() => props.inputValue, (newVal) => {
-  inputValue.value = newVal;
+  inputValueDisplay.value = formatValue(newVal);
+});
+
+onMounted(() => {
+    const formatted = formatValue(props.inputValue);
+    inputValueDisplay.value = formatted;
 });
 
 </script>
@@ -35,10 +52,11 @@ watch(() => props.inputValue, (newVal) => {
         <label class="plan-label" for="">{{ props.label }}</label>
         <div class="input-container">
             <input
-                v-model="inputValue"
+                v-model="inputValueDisplay"
                 class="plan-input"
                 type="text"
                 @blur="handleBlur"
+                @focus="handleFocus"
             />
         </div>
     </div>

@@ -1,23 +1,23 @@
 <script setup>
-import { formatValue } from '@/assets/functions/functions';
+import { formatValue, removeDots } from '@/assets/functions/functions';
 import categoryService from '@/services/categoryService';
-import { ref, watch } from 'vue';
+import { onMounted, ref, watch } from 'vue';
 
 const props = defineProps({
     showCategories: Function,
     category: Object, 
-    selected: String
 });
 
 const emit = defineEmits(["updated"]);
 
 const description = ref(props.category.description);
-const targetValue = ref(props.category.targetValue);
 
+const targetValue = ref(props.category.targetValue);
+const targetValueDisplay = ref(formatValue(props.category.targetValue));
 
 const deleteCategory = async (categoryId) => {
   const userResponse = confirm('Tem certeza que deseja excluír essa despesa? ')
-  if (!userResponse) return
+  if (!userResponse) return;
 
   const response = await categoryService.deleteCategory(categoryId);
 
@@ -28,14 +28,6 @@ const deleteCategory = async (categoryId) => {
   }
 
   alert('Erro ao excluir categoria');
-}
-
-const isBaseCategory = (type) => {
-   return type == 'BASE';
-}
-
-const isSelected = (categoryId) => {
-  return categoryId === props.selected;
 }
 
 const updateCategoryDescription = async (categoryId, description) => {
@@ -65,66 +57,51 @@ const updateCategoryTargetValue = async (categoryId, targetValue) => {
   }
 }
 
+const handleTargetValueBlur = () => {
+  if (targetValue.value === props.category.targetValue) return;
+
+  const cleanValue = targetValueDisplay.value.replace(/,/g, '.').replace(/[^0-9.]/g, '');
+  targetValueDisplay.value = cleanValue;
+
+  updateCategoryTargetValue(props.category.categoryId, targetValueDisplay.value);
+
+  const formatted = formatValue(cleanValue);
+  targetValueDisplay.value = formatted;
+};
+
 watch(() => props.category, (newVal) => {
   description.value = newVal.description;
-  targetValue.value = newVal.targetValue;
+  targetValueDisplay.value = formatValue(newVal.targetValue);
 });
 
+onMounted(() => {
+  targetValueDisplay.value = formatValue(props.category.targetValue);
+});
 
 </script>
 
 <template>
-    <div 
-      class="grid category-container"
-      :class="{
-        'base-category': isBaseCategory(category.type),
-        'selected': isSelected(category.categoryId)
-      }"
-      @click="selectedCategory = category.categoryId"
-      >
-        <input 
-          type="text"
-          v-model="description"
-          @blur="updateCategoryDescription(category.categoryId, description)"
-        />
-        <input 
-          type="text"
-          v-model="targetValue"
-          @blur="updateCategoryTargetValue(category.categoryId , targetValue)"
-        />
-        <p>{{ formatValue(category.actualValue) }}</p>
-        <p>{{ formatValue(category.targetValue - category.actualValue) }}</p>
-        <div class="d-flex justify-content-end">
-            <i class="fa fa-trash text-danger" aria-hidden="true" @click="deleteCategory(category.categoryId)"></i>
-        </div>
+  <div class="grid grid-cell"> 
+    <input 
+      type="text"
+      v-model="description"
+      @blur="updateCategoryDescription(category.categoryId, description)"
+    />
+    <input 
+      type="text"
+      v-model="targetValueDisplay"
+      @blur="handleTargetValueBlur()"
+      @focus="targetValueDisplay = removeDots(targetValueDisplay)"
+    />
+    <p>{{ formatValue(category.actualValue) }}</p>
+    <p>{{ formatValue(category.targetValue - category.actualValue) }}</p>
+    <div class="d-flex justify-content-end cursor-pointer" @click="deleteCategory(category.categoryId)">
+        <i class="fa fa-trash text-danger" aria-hidden="true"></i>
     </div>
+  </div>
 </template>
 
 <style scoped>
-
-  .category-container {
-    padding: 3px 0;
-    border-bottom: 1px solid #000;
-    
-    &:hover {
-      background-color: #c0dbd1;
-      cursor: pointer;
-    }
-  }
-
-  .base-category {
-    background-color: #e2f3ed;
-    font-weight: 500;
-
-    &:hover {
-      background-color: #c0dbd1;
-
-    }
-  }
-
-  .selected {
-    background-color: #c0dbd1;
-  }
 
   p, i {
     padding: 0.3rem;

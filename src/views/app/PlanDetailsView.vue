@@ -1,7 +1,7 @@
 <script setup>
 import NewCategoryModal from '@/components/modal/NewCategoryModal.vue'
 import { formatDate, formatValue } from '@/assets/functions/functions'
-import { computed, onMounted, ref } from 'vue'
+import { computed, onMounted, onUnmounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import Category from '@/components/grid-fields/Category.vue'
 import planService from '@/services/planService'
@@ -17,17 +17,24 @@ const plan = ref([])
 
 const planTitleInput = ref('')
 
-// const categoryTotals = {}
-
 const categories = ref([])
 const selectedCategory = ref(null);
 const categoryExpenses = ref([])
 
 const modalVisible = ref(false)
+const modal = ref(null);
 const isLoading = ref(false);
+
 
 const redirectToPlanRoute = () => {
   router.push({ name: 'Plan' })
+}
+
+const handleDocumentClick = (e) => {
+  if (e.target.classList.contains('btn-success')) return;
+
+  const modalElement = modal.value?.$el;
+  if (!modalElement?.contains(e.target)) toggleVisibility(false);
 }
 
 const handleModalClose = () => {
@@ -37,6 +44,14 @@ const handleModalClose = () => {
 
 const toggleVisibility = (visibility) => {
   modalVisible.value = visibility
+}
+
+const isBaseCategory = (type) => {
+   return type == 'BASE';
+}
+
+const isSelected = (categoryId) => {
+  return categoryId === selectedCategory.value;
 }
 
 const showCategories = async () => {
@@ -98,7 +113,13 @@ onMounted(async () => {
   isLoading.value = true;
   await findPlan();
   await showCategories();
+  document.addEventListener('click', handleDocumentClick);
+  await planService.fetchAllPlans();
   isLoading.value = false;
+})
+
+onUnmounted(() => {
+  document.removeEventListener('click', handleDocumentClick);
 })
 
 </script>
@@ -106,12 +127,10 @@ onMounted(async () => {
 <template>
   <div class="plan-container overflow-hidden">
     <header class="my-4">
-      <img
-        @click="redirectToPlanRoute"
-        class="btn-back"
-        src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAYAAAAeP4ixAAAACXBIWXMAAAsTAAALEwEAmpwYAAAArklEQVR4nO3Y0QqCQBRF0f2FZTGDD/bvQUEFfYKBMjAQhD537uUs8N3DVnAEs9ROwBN4A4WgRmAGln61MeFHLMCLBCNm4EwgdWPEB5gIxCNUuIQKl1DhEipcQoVLqKj+ABRRM5QYdg5F7bAUyj3DiFRDhiyPFv3/09bLfiGg4jGiisuIKi4jqriMKJdR5TKqXEZVqjLjzuHsSJIxN4L6HfMgsPY4XXuNw79vxoyvFeVU7Pycczv1AAAAAElFTkSuQmCC"
-        alt="back"
-      />
+      <div @click="redirectToPlanRoute">
+        <i class="fa-solid fa-arrow-left btn-back"></i>
+      </div>
+        
       <div class="input-container">
         <input
           v-model="plan.title"
@@ -155,16 +174,19 @@ onMounted(async () => {
       <section class="categories">
         <div class="grid pb-3 border-bottom border-dark">
           <p class="caption">Descrição</p>
-          <p class="caption">Meta</p>
-          <p class="caption">Valor Gasto</p>
-          <p class="caption">Saldo</p>
+          <p class="caption">Meta (R$)</p>
+          <p class="caption">Valor Gasto (R$)</p>
+          <p class="caption">Saldo (R$)</p>
         </div>
         <div>
-          <Category 
+          <Category  
             v-if="!isLoading"
             v-for="category in categories"
             :key="category.categoryId"  
-            :selected="selectedCategory"
+            :class="{
+              'base-category': isBaseCategory(category.type),
+              'selected': isSelected(category.categoryId)
+            }"
             :category="category"
             :showCategories="showCategories"
             @updated="showCategories"
@@ -298,12 +320,14 @@ header {
   border-radius: 10px;
 }
 
-.delete-category-img {
-  cursor: pointer;
-  transition: all 300ms ease;
+.base-category {
+    background-color: #e2f3ed;
+    font-weight: 500;
 
-  &:hover {
-    transform: scale(1.1);
+    &:hover {
+      background-color: #c0dbd1;
+
+    }
   }
-}
+
 </style>

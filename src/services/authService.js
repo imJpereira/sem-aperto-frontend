@@ -1,37 +1,34 @@
 import api from "@/utils/api";
-import { useLoginStore } from "@/stores/loginStore";
 
-export const signUp = async (username, email, password) => {
-    try {
-        const response = await api.post("/auth/signup", {
-            username,
-            email,
-            password
-        });
-
-        return response;
-    } catch (e) {
-        console.error(e);
-    } 
-}
-
-export const signIn = async (username, password) => {
-    const loginStore = useLoginStore();
+const authService = {
     
-    try {
-        const response = await api.post("/auth/signin", {
-            username,
-            password
-        });
+    signUp: async (username, email, password) => {
+        try {
+            const response = await api.post("/auth/signup", {
+                username,
+                email,
+                password
+            });
+            
+            return response;
+        } catch (e) {
+            console.error(e);
+        } 
+    },
 
-        loginStore.user.username = response.data.user.username;
-        loginStore.user.email = response.data.user.email;
-        loginStore.user.jsonWebToken = response.data.token;
+    signIn: async (username, password) => {    
+        try {
+            const response = await api.post("/auth/signin", {
+                username,
+                password
+            });
+            return response;
 
-        return response;
+        } catch (e) {
+            console.error(e);
+        } 
+    }
 
-    } catch (e) {
-        console.error(e);
-    } 
-}
+};
 
+export default authService;

@@ -35,14 +35,16 @@ const toggleMenuHamburger = () => {
       <nav class="main-menu-content">
         <ul>
           <li @click="toggleMenuHamburger()" :class="{ menuActive: isActive('/despesas') }">
-            <RouterLink to="/despesas" >Despesas</RouterLink>
+            <RouterLink to="/despesas">Despesas</RouterLink>
           </li>
           <li @click="toggleMenuHamburger()" :class="{ menuActive: isActive('/planos') }">
-            <RouterLink to="/planos" >Planos</RouterLink
-            >
+            <RouterLink to="/planos">Planos</RouterLink>
           </li>
         </ul>
       </nav>
+      <div class="logout-container p-3"> 
+        <button class="btn btn-danger" @click="loginStore.signOut()"><i class="fas fa-right-from-bracket"></i>Sair</button>
+      </div>
     </aside>
 
     <div class="tab-container">
@@ -72,6 +74,8 @@ const toggleMenuHamburger = () => {
 }
 
 .main-menu {
+  display: flex;
+  flex-direction: column;
   width: 15%;
 
   color: var(--vt-c-white);
@@ -86,14 +90,18 @@ const toggleMenuHamburger = () => {
 
 .main-menu-content {
   padding: 2rem 1.5rem;
+  /* background-color: blue; */
+  flex-grow: 1;
 
   li {
+    /* background-color: red; */
     margin-bottom: 1rem;
     position: relative;
   }
 }
 
 .main-menu-profile {
+  /* background-color: yellow; */
   padding: 5rem 1.5rem;
   border-bottom: 2px solid var(--vt-c-divider-dark-2);
 }

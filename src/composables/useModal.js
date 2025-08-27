@@ -1,5 +1,5 @@
 export function useModal(emit) {
     return {
-        closeModal: () => emit("close")
+        closeModal: () => {console.log("closing modal"); emit("close")}
     };
 }

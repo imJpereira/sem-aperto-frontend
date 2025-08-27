@@ -2,7 +2,6 @@
 import { useLoginStore } from '@/stores/loginStore';
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
-import { signIn } from '@/services/authService';
 
 const loginStore = useLoginStore();
 const router = useRouter();
@@ -10,7 +9,7 @@ const router = useRouter();
 const username = ref("");
 const password = ref("");
 
-const handleSIgnIn = async () => {
+const handleSignIn = async () => {
     let msg = "";
     if (!username.value) msg += "Informe um usuário. ";
     if (!password.value) msg += "Informe uma senha. ";         
@@ -20,8 +19,9 @@ const handleSIgnIn = async () => {
     }
 
     try {
-        await signIn(username.value, password.value);
+        await loginStore.signIn(username.value, password.value);
 
+        console.log(loginStore.user.username);
         if (loginStore.user.jsonWebToken) {
             router.push("/planos");
         } else {
@@ -47,7 +47,7 @@ const handleSIgnIn = async () => {
                 <div class="text-center">
                     <span >Não tem uma conta? <RouterLink to="/signup" class="text-success">Clique aqui para fazer cadastrar</RouterLink></span>
                 </div>
-                <form @submit.prevent="handleSIgnIn" class="py-5">
+                <form @submit.prevent="handleSignIn" class="py-5">
                     <div class="w-100 pb-3">
                         <label for="username" class="form-label">Usuário</label>
                         <input v-model="username" id="username" type="text" class="form-control">

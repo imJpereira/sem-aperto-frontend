@@ -4,6 +4,7 @@ import { onMounted, onUnmounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { usePlanStore } from '@/stores/planStore';
 import planService from '@/services/planService';
+import { formatValue } from '@/assets/functions/functions';
 
 const router = useRouter();
 const planStore = usePlanStore();
@@ -13,6 +14,7 @@ const modal = ref(null);
 const handleDocumentClick = (e) => {
   if (e.target.classList.contains('btn-success')) return;
 
+  console.log("handle document click");
   const modalElement = modal.value?.$el;
   if (!modalElement?.contains(e.target)) toggleVisibility(false);
 }
@@ -63,10 +65,10 @@ onUnmounted(() => {
       >
         <h2>{{ plan.title }}</h2>
         <div class="d-flex align-items-center justify-content-center">
-          <span>Capital Inicial: R$ {{ plan.initialCapital }}</span><br>
-          <span>Total Gasto: R$ {{ plan.totalSpent }}</span>
+          <span>Capital Inicial: {{ formatValue(plan.initialCapital) }}</span><br>
+          <span>Total Gasto: {{ formatValue(plan.totalSpent) }}</span>
         </div>
-        <span><b>Saldo: R$ {{ plan.initialCapital - plan.totalSpent }}</b></span>
+        <span><b>Saldo: {{ formatValue(plan.initialCapital - plan.totalSpent) }}</b></span>
       </div>
     </div>
 

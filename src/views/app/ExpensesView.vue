@@ -8,6 +8,8 @@ import expensesService from '@/services/expensesService'
 const modalVisible = ref(false);
 const modal = ref(null);
 
+const selectedExpense = ref(null);
+
 const expenses = ref([]);
 
 const showExpenses = async () => {
@@ -65,25 +67,18 @@ onUnmounted(() => {
       <p class="caption">Data</p>
     </div>
     <Expense 
-      v-for="expense in expenses" 
+      v-for="expense in expenses"
+      :class="{ selected: selectedExpense === expense.expenseId }"
       :key="expense.expenseId" 
       :expense="expense"
-      @updated="showExpenses" 
+      @updated="showExpenses"
+      @click="selectedExpense = expense.expenseId" 
     />
   </section>
+  
 </template>
 
 <style scoped>
-
-
-.delete-expense-img {
-  cursor: pointer;
-  transition: all 300ms ease;
-
-  &:hover {
-    transform: scale(1.1);
-  }
-}
 
 @media (max-width: 1200px) {
   h1 {
