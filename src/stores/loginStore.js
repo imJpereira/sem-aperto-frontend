@@ -20,6 +20,10 @@ export const useLoginStore = defineStore('login', () => {
 
   const signIn = async (username, password) => {
     const response = await authService.signIn(username, password);
+  
+    if (response.status !== 200) {
+      return response;
+    }
 
     user.value.username = response.data.user.username;
     user.value.email = response.data.user.email;

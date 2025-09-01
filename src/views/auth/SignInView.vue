@@ -19,9 +19,13 @@ const handleSignIn = async () => {
     }
 
     try {
-        await loginStore.signIn(username.value, password.value);
+        const response = await loginStore.signIn(username.value, password.value);
+        if (response.status !== 200) {
+            alert("Usuário ou senha inválidos.");
+            return;
+        }
 
-        console.log(loginStore.user.username);
+        console.log("login store token: " + loginStore.user.jsonWebToken);
         if (loginStore.user.jsonWebToken) {
             router.push("/planos");
         } else {
@@ -37,22 +41,23 @@ const handleSignIn = async () => {
 
 <template>
     
-    <main class="main-container d-flex">       
-        <div class="description-container">
-        </div>
+    <main class="main-container d-flex align-items-center justify-content-center bg-main-theme">       
         
         <div class="form-container d-flex justify-content-center align-items-center">
-            <div class="w-50 h-75">
+            <div>
+                <div class="logo-container">
+                    <img src="../../assets/icons/logo.png" alt="Logo" class="logo"/>
+                </div>
                 <h1 class="text-center">Entre na sua conta</h1>
                 <div class="text-center">
                     <span >Não tem uma conta? <RouterLink to="/signup" class="text-success">Clique aqui para fazer cadastrar</RouterLink></span>
                 </div>
-                <form @submit.prevent="handleSignIn" class="py-5">
-                    <div class="w-100 pb-3">
+                <form @submit.prevent="handleSignIn" class="py-5 d-flex flex-column">
+                    <div class="pb-3 full-width">
                         <label for="username" class="form-label">Usuário</label>
                         <input v-model="username" id="username" type="text" class="form-control">
                     </div>
-                    <div class="w-100 pb-3">
+                    <div class="pb-3 full-width">
                         <label for="password" class="form-label">Senha</label>
                         <input v-model="password" id="password" type="password" class="form-control">
                     </div>
@@ -65,21 +70,3 @@ const handleSignIn = async () => {
         
     </main>
 </template>
-
-<style scoped>
-    .main-container {
-        height: 100vh;
-        width: 100vw;
-    }
-
-    .form-container {
-        flex-grow: 1;
-        background-color: #ffffff;
-    }
-
-    .description-container {
-        flex-grow: 3;
-        background-color: var(--color-main-theme);
-    }
-
-</style>

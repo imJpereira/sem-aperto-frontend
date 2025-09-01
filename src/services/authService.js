@@ -12,8 +12,8 @@ const authService = {
             
             return response;
         } catch (e) {
-            console.error(e);
-        } 
+            return e;
+        }
     },
 
     signIn: async (username, password) => {    
@@ -25,7 +25,7 @@ const authService = {
             return response;
 
         } catch (e) {
-            console.error(e);
+            return e;
         } 
     }
 

@@ -1,6 +1,7 @@
 <script setup>
 import { formatDate, formatValue, removeDots } from '@/assets/functions/functions';
 import expensesService from '@/services/expensesService';
+import ExpensesView from '@/views/app/ExpensesView.vue';
 import { ref, watch } from 'vue';
 
 const props = defineProps({
@@ -10,7 +11,8 @@ const props = defineProps({
 const expenseDescription = ref(props.expense.description);
 
 const expenseValue = ref(props.expense.value);
-const expoenseValueDisplay = ref(formatValue(props.expense.value));
+const expenseValueDisplay = ref(formatValue(props.expense.value));
+const expenseDate = ref(props.expense.expenseDate);
 
 const emit = defineEmits(["updated"]);
 
@@ -39,6 +41,20 @@ const updateExpenseValue = async (expenseId, value) => {
     }
 }
 
+const updateExpenseDate = async (expenseId, expenseDate) => {
+    // console.log(expenseDate, )
+    if (expenseDate === props.expense.expenseDate) return;
+
+    const response = await expensesService.updateExpense(expenseId, { expenseDate });
+
+    emit("updated");
+
+    if (response.status > 300 || response.status < 200) {
+        alert('Erro ao atualizar despesa');
+        return;
+    }
+}
+
 const deleteExpense = async (expenseId) => {
     const userResponse = confirm('Tem certeza que deseja excluír essa despesa? ')
     if (!userResponse) return
@@ -55,20 +71,21 @@ const deleteExpense = async (expenseId) => {
 }
 
 const handleBlur = () => {
-    if (expoenseValueDisplay.value === formatValue(props.expense.value)) return;
+    if (expenseValueDisplay.value === formatValue(props.expense.value)) return;
 
-    const cleanValue = expoenseValueDisplay.value.replace(/,/g, '.').replace(/[^0-9.]/g, '');
+    const cleanValue = expenseValueDisplay.value.replace(/,/g, '.').replace(/[^0-9.]/g, '');
     expenseValue.value = cleanValue;
 
     updateExpenseValue(props.expense.expenseId, expenseValue.value);
 
     const formatted = formatValue(cleanValue);
-    expoenseValueDisplay.value = formatted;
+    expenseValueDisplay.value = formatted;
 };
 
 watch(() => props.expense, (newValue) => {
     expenseDescription.value = newValue.description;
-    expoenseValueDisplay.value = formatValue(newValue.value);
+    expenseValueDisplay.value = formatValue(newValue.value);
+    expenseDate.value = newValue.expenseDate;
 });
 
 </script>
@@ -81,12 +98,15 @@ watch(() => props.expense, (newValue) => {
           @blur="updateExpenseDescription(expense.expenseId, expenseDescription)"
         />
         <input type="text"
-          v-model="expoenseValueDisplay"
+          v-model="expenseValueDisplay"
           @blur="handleBlur()"
-          @focus="expoenseValueDisplay = removeDots(expoenseValueDisplay)"
+          @focus="expenseValueDisplay = removeDots(expenseValueDisplay)"
           >
         <p>{{ expense.category?.description }}</p>
-        <p>{{ formatDate(expense.expenseDate) }}</p>
+        <input type="date" 
+            v-model="expenseDate"
+            @change="updateExpenseDate(expense.expenseId, expenseDate)"
+            />
         <div class="d-flex justify-content-end cursor-pointer" @click="deleteExpense(expense.expenseId)">
             <i class="fa fa-trash text-danger" aria-hidden="true"></i>
         </div>

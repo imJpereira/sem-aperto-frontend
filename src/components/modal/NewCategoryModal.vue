@@ -20,9 +20,7 @@ const props = defineProps({
 });
 
 const isFormValid = () => {
-    console.log(description.value, targetValue.value);
-
-    return  description.value && targetValue.value && Number(targetValue.value) > 0;
+    return description.value && targetValue.value && Number(targetValue.value) > 0;
 };
 
 const handleSubmit = async() => {
@@ -47,7 +45,7 @@ const createCategory = async () => {
 
 <template>
     <BaseModal class="new-category-modal">
-        <button class="close" @click="closeModal()"><i class="fa-solid fa-x text-white" @click="closeModal()"></i></button>
+        <button class="close invisible-button" @click="closeModal()"><i class="fa-solid fa-x text-white" @click="closeModal()"></i></button>
         <form action="POST" @submit.prevent="handleSubmit()">
             <SimpleInput v-model="description" label="Descrição" />
             <SimpleInput v-model="targetValue" label="Meta" :decimal="true" />

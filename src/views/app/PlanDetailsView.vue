@@ -31,11 +31,12 @@ const redirectToPlanRoute = () => {
 }
 
 const handleDocumentClick = (e) => {
-  if (e.target.classList.contains('btn-success')) return;
+  if (e.target.closest('.btn-add') || e.target.closest('.btn-success')) return;
 
   const modalElement = modal.value?.$el;
   if (!modalElement?.contains(e.target)) toggleVisibility(false);
 }
+
 
 const handleModalClose = () => {
   toggleVisibility(false)
@@ -43,6 +44,7 @@ const handleModalClose = () => {
 }
 
 const toggleVisibility = (visibility) => {
+  console.log("toggle visibility " + visibility);
   modalVisible.value = visibility
 }
 
@@ -126,63 +128,65 @@ onUnmounted(() => {
 
 <template>
   <div class="plan-container overflow-hidden">
-    <header class="my-4">
-      <div @click="redirectToPlanRoute">
-        <i class="fa-solid fa-arrow-left btn-back"></i>
-      </div>
-        
-      <div class="input-container">
+    <header>
+      <div class="header-left">
+        <button class="invisible-button" @click="redirectToPlanRoute">
+          <i class="fa-solid fa-arrow-left"></i>
+        </button>
         <input
           v-model="plan.title"
-          class="plan-input h1-input"
+          class="plan-title"
           type="text"
+          placeholder="Título do Plano"
           @blur="updatePlanTitle()"
         />
       </div>
-      <button @click="deletePlan(plan.planId)" class="btn btn-danger btn-large">
+      <button @click="deletePlan(plan.planId)" class="btn-delete">
         Excluir Plano
-      </button> 
+      </button>
     </header>
 
     <div class="plan-info-container">
-      <SimpleInfoCard 
+      <SimpleInfoCard
         v-if="!isLoading"
-        :inputValue="plan.initialCapital" 
-        :label="'Capital Inicial'"
-        :onBlur="updatePlanInitialCapital" 
+        :inputValue="plan.initialCapital"
+        label="Capital Inicial"
+        :onBlur="updatePlanInitialCapital"
       />
-      <DateInfoCard 
+      <DateInfoCard
         v-if="!isLoading"
-        :inputValue="plan.startDate" 
-        :label="'Data Inicial'"
+        :inputValue="plan.startDate"
+        label="Data Inicial"
         :onBlur="updatePlanStartDate"
       />
-      <DateInfoCard 
+      <DateInfoCard
         v-if="!isLoading"
-        :inputValue="plan.finalDate" 
-        :label="'Data Final'"
+        :inputValue="plan.finalDate"
+        label="Data Final"
         :onBlur="updatePlanFinalDate"
       />
-
     </div>
 
     <div class="py-2">
-      <button @click="toggleVisibility(true)" class="btn btn-success">Adicionar Categoria</button>
+      <button @click="toggleVisibility(true)" class="btn-add">
+        + Adicionar Categoria
+      </button>
     </div>
 
     <div class="main-content">
       <section class="categories">
-        <div class="grid pb-3 border-bottom border-dark">
+        <div class="grid grid-header">
           <p class="caption">Descrição</p>
           <p class="caption">Meta (R$)</p>
           <p class="caption">Valor Gasto (R$)</p>
           <p class="caption">Saldo (R$)</p>
         </div>
-        <div>
-          <Category  
+
+        <div class="categories-grid">
+          <Category
             v-if="!isLoading"
             v-for="category in categories"
-            :key="category.categoryId"  
+            :key="category.categoryId"
             :class="{
               'base-category': isBaseCategory(category.type),
               'selected': isSelected(category.categoryId)
@@ -193,29 +197,28 @@ onUnmounted(() => {
             @click="showCategoryExpenses(category.categoryId); selectedCategory = category.categoryId"
           />
         </div>
-        <div class="grid pb-3">
+
+        <div class="grid grid-footer">
           <p><b>Total</b></p>
-          <p>
-            <b>{{ formatValue(categoryTotals.targetValue) }}</b>
-          </p>
-          <p>
-            <b>{{ formatValue(categoryTotals.actualValue) }}</b>
-          </p>
+          <p><b>{{ formatValue(categoryTotals.targetValue) }}</b></p>
+          <p><b>{{ formatValue(categoryTotals.actualValue) }}</b></p>
           <p>
             <b>{{ formatValue(categoryTotals.targetValue - categoryTotals.actualValue) }}</b>
           </p>
         </div>
       </section>
+
       <section class="category-expenses">
-        <div class="grid expenses-grid pb-3 border-bottom border-dark">
+        <div class="grid grid-header">
           <p class="caption">Descrição</p>
           <p class="caption">Data</p>
           <p class="caption">Valor</p>
         </div>
+
         <div
           v-for="categoryExpense in categoryExpenses"
           :key="categoryExpense.id"
-          class="expenses-grid grid border-bottom py-2"
+          class="grid grid-expense"
         >
           <p>{{ categoryExpense.description }}</p>
           <p>{{ formatDate(categoryExpense.expenseDate) }}</p>
@@ -224,110 +227,179 @@ onUnmounted(() => {
       </section>
     </div>
   </div>
-
   <NewCategoryModal
-    v-if="modalVisible"
-    ref="modal"
-    :plan-id="plan.planId"
-    @close="handleModalClose()"
-  />
+      v-if="modalVisible"
+      ref="modal"
+      :plan-id="plan.planId"
+      @close="handleModalClose()"
+    />
 </template>
 
 <style scoped>
+.plan-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+  padding: 1rem;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+}
+
 header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  /* background-color: violet; */
+  padding-bottom: 1rem;
+  border-bottom: 2px solid #eaeaea;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-grow: 1;
 }
 
 .btn-back {
-  height: 30px;
-  width: 30px;
-  margin-right: 20px;
+  height: 32px;
+  width: 32px;
   cursor: pointer;
+  color: #444;
+  transition: transform 0.2s ease, color 0.2s ease;
 }
 
-.expenses-grid {
-  grid-template-columns: 2fr 1fr 1fr;
+.btn-back:hover {
+  transform: translateX(-3px);
+  color: #007bff;
 }
 
-.input-container {
-  position: relative;
-  display: inline-block;
-  flex-grow: 1;
-  /* background-color: grey; */
+.plan-title {
+  font-size: 1.6rem;
+  font-weight: 600;
+  border: none;
+  border-bottom: 2px solid transparent;
+  padding: 0.2rem 0.5rem;
+  outline: none;
+  width: 100%;
+  background: transparent;
+  transition: border-color 0.3s ease;
 }
 
-.h1-input {
-  font-size: 30px;
+.plan-title:focus {
+  border-color: #007bff;
 }
 
-.h1-input ~ .input-icon {
-  width: 40px;
-  height: 40px;
-}
-
-
-.input-icon {
-  position: absolute;
-  /* right: 10px; */
-  top: 50%;
-  transform: translateY(-65%);
-  width: 20px;
-  height: 20px;
+.btn-delete {
+  background: #dc3545;
+  color: white;
+  border: none;
+  padding: 0.6rem 1rem;
+  border-radius: 6px;
   cursor: pointer;
+  font-weight: 500;
+  transition: background 0.2s ease;
+}
+
+.btn-delete:hover {
+  background: #b02a37;
 }
 
 .plan-info-container {
   display: flex;
-  flex-direction: flex-start;
+  flex-wrap: wrap;
   gap: 1rem;
-  padding: 1rem 0 2rem 0;
+  padding: 1.5rem 0;
 }
 
-.plan-container {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  padding: 0.5rem;
-  /* border-radius: 10px;
-    background-color: var(--plan-bg) */
+.btn-add {
+  background: #198754;
+  color: white;
+  border: none;
+  padding: 0.6rem 1.2rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background 0.2s ease;
+}
+
+.btn-add:hover {
+  background: #157347;
 }
 
 .main-content {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.5rem;
-  flex-grow: 1;
-  /* background-color: rgb(82, 224, 153); */
+  gap: 1rem;
+  flex-grow: 1; 
 }
 
 .categories {
-  flex-grow: 1;
   width: 100%;
-  background-color: #f9f9f9;
+  flex: 2;
+  min-width: 60%;
+  background-color: #fdfdfd;
   padding: 1rem;
-  border-radius: 10px;
+  border-radius: 12px;
+  border: 1px solid #ececec;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+}
+
+.categories-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+grid-header {
+  border-bottom: 1px solid #ececec;
+  font-weight: 600;
+  color: #666;
+}
+
+.grid-footer {
+  border-top: 1px solid #ececec;
+  margin-top: 0.5rem;
+}
+
+.grid-expense {
+  grid-template-columns: 2fr 1fr 1fr;
+  padding: 0.6rem 0;
+  border-bottom: 1px solid #ececec;
 }
 
 .category-expenses {
-  flex-grow: 1;
-  width: 100%;
-  background-color: #f9f9f9;
-  min-width: 40%;
+  flex: 1;
+  background-color: #fff;
+  min-width: 35%;
   padding: 1rem;
-  border-radius: 10px;
+  border-radius: 12px;
+  border: 1px solid #ececec;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.04);
 }
 
 .base-category {
-    background-color: #e2f3ed;
-    font-weight: 500;
+  background-color: #e8f8f2;
+  font-weight: 500;
+  padding: 0.5rem;
+  border-radius: 8px;
+  transition: background-color 0.2s ease;
+}
 
-    &:hover {
-      background-color: #c0dbd1;
+.base-category:hover {
+  background-color: #cdeee0;
+}
 
-    }
-  }
+.categories {
+  overflow-y: auto;
+  scrollbar-width: none; 
+  -ms-overflow-style: none;
+}
+
+.categories::-webkit-scrollbar {
+  display: none;
+}
+
 
 </style>

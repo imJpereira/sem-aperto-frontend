@@ -58,7 +58,7 @@ const updateCategoryTargetValue = async (categoryId, targetValue) => {
 }
 
 const handleTargetValueBlur = () => {
-  if (targetValue.value === props.category.targetValue) return;
+  if (targetValueDisplay.value === formatValue(props.category.targetValue)) return;
 
   const cleanValue = targetValueDisplay.value.replace(/,/g, '.').replace(/[^0-9.]/g, '');
   targetValueDisplay.value = cleanValue;
@@ -92,10 +92,11 @@ onMounted(() => {
       v-model="targetValueDisplay"
       @blur="handleTargetValueBlur()"
       @focus="targetValueDisplay = removeDots(targetValueDisplay)"
+      :disabled="category.type === 'BASE'"
     />
     <p>{{ formatValue(category.actualValue) }}</p>
     <p>{{ formatValue(category.targetValue - category.actualValue) }}</p>
-    <div class="d-flex justify-content-end cursor-pointer" @click="deleteCategory(category.categoryId)">
+    <div v-if="category.type !== 'BASE'" class="d-flex justify-content-end cursor-pointer" @click="deleteCategory(category.categoryId)">
         <i class="fa fa-trash text-danger" aria-hidden="true"></i>
     </div>
   </div>
@@ -113,6 +114,10 @@ onMounted(() => {
     padding: 0.3rem;
     background-color: transparent;
     outline: none;
+  }
+
+  .grid input:disabled {
+    color: #000000;
   }
 
 </style>

@@ -77,7 +77,6 @@ const toggleMenuHamburger = () => {
   display: flex;
   flex-direction: column;
   width: 15%;
-
   color: var(--vt-c-white);
   background-color: var(--color-main-theme);
 

@@ -42,7 +42,7 @@ const createPlan = async () => {
 <template>
     
 <BaseModal class="new-plan-modal">
-    <button class="close" @click="closeModal()"><i class="fa-solid fa-x text-white" @click="closeModal()"></i></button>
+    <button class="close invisible-button" @click="closeModal()"><i class="fa-solid fa-x text-white" @click="closeModal()"></i></button>
     <form action="POST" @submit.prevent="handleSubmit()">
         <SimpleInput v-model="title" label="Título" />
         <DateInput v-model="startDate" label="Início" />

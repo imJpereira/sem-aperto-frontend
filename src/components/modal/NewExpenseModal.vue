@@ -59,7 +59,7 @@ const handlePlanBlur = async () => {
 
 <template>  
     <BaseModal class="new-expense-modal">
-        <button class="close" @click="closeModal()"><i class="fa-solid fa-x text-white" @click="closeModal()"></i></button>
+        <button class="close invisible-button" @click="closeModal()"><i class="fa-solid fa-x text-white" @click="closeModal()"></i></button>
         <form @submit.prevent="handleSubmit">
             
             <DateInput v-model="expenseDate" label="Data" />
