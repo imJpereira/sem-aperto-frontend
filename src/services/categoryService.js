@@ -13,7 +13,7 @@ const categoryService = {
             });
             return response;
         } catch (e) {
-            console.error(e);
+            return e;
         }
     },   
     
@@ -29,7 +29,7 @@ const categoryService = {
 
             return response;
         } catch (e) {
-            console.error(e);
+            return e;
         }
     },
 
@@ -45,7 +45,7 @@ const categoryService = {
 
             return response;
         } catch (e) {
-            console.error(e);
+            return e;
         }
     },
 
@@ -63,7 +63,7 @@ const categoryService = {
 
             return response.data;
         } catch (e) {
-            console.error(e);
+            return e;
         }
     },
 

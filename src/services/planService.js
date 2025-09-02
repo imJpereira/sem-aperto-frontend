@@ -14,7 +14,7 @@ const planService = {
             });
             return response;
         } catch (e) {
-            console.error(e);
+            return e;
         }
 },
 
@@ -31,7 +31,7 @@ const planService = {
 
             return response;
         } catch (e) {
-            console.error(e);
+            return e;
         }
     },
 
@@ -47,7 +47,7 @@ const planService = {
 
             return response;
         } catch (e) {
-            console.error(e);
+            return e;
         }
     },
 
@@ -65,7 +65,7 @@ const planService = {
             planStore.plans = response.data;
             return response.data;
         } catch (e) {
-            console.error(e);
+            return e;
         }
     },
 
@@ -81,7 +81,7 @@ const planService = {
 
             return response.data;
         } catch (e) {
-            console.error(e);
+            return e;
         }
     }
 }

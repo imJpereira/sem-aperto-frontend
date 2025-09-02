@@ -48,7 +48,7 @@ const createExpense = async () => {
         description: expenseDescription.value,
     });
 
-    return response.status >= 200 ? "Despesa criada com sucesso!" : "Erro ao criar despesa";
+    return (response.status >= 200) && (response.status < 300) ? "Despesa criada com sucesso!" : "Erro ao criar despesa\n" + response.response.data;
 }
 
 const handlePlanBlur = async () => {

@@ -44,7 +44,6 @@ const handleModalClose = () => {
 }
 
 const toggleVisibility = (visibility) => {
-  console.log("toggle visibility " + visibility);
   modalVisible.value = visibility
 }
 
@@ -58,7 +57,6 @@ const isSelected = (categoryId) => {
 
 const showCategories = async () => {
   categories.value = await categoryService.fetchAllCategoriesByPlan(route.params.id);
-  console.log("show categories  " + JSON.stringify(categories.value));
   selectedCategory.value = categories.value[0].categoryId;
 }
 
@@ -79,7 +77,6 @@ const showCategoryExpenses = async (categoryId) => {
 
 const findPlan = async () => {
   plan.value = await planService.fetchPlanById(route.params.id);
-  console.log(plan.value.initialCapital);
 }
 
 const updatePlanTitle = async () => {

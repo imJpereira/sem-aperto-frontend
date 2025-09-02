@@ -38,7 +38,8 @@ const createCategory = async () => {
         planId: props.planId
     });
 
-    return response.status >= 200 ? "Categoria criada com sucesso!" : "Erro ao criar categoria";
+
+    return (response.status >= 200) && (response.status < 300) ? "Categoria criada com sucesso!" : "Erro ao criar categoria\n" + response.response.data;
 }
 
 </script>

@@ -34,25 +34,25 @@ const createPlan = async () => {
         finalDate: finalDate.value,
         initialCapital: capital.value
     });
-    
-    return response.status >= 200 ? "Plano criado com sucesso" : "Erro ao criar plano";
+
+    return (response.status >= 200) && (response.status < 300) ? "Plano criado com sucesso" : "Erro ao criar plano\n" + response.response.data;
 }
 </script>
 
 <template>
     
-<BaseModal class="new-plan-modal">
-    <button class="close invisible-button" @click="closeModal()"><i class="fa-solid fa-x text-white" @click="closeModal()"></i></button>
-    <form action="POST" @submit.prevent="handleSubmit()">
-        <SimpleInput v-model="title" label="Título" />
-        <DateInput v-model="startDate" label="Início" />
-        <DateInput v-model="finalDate" label="Fim" />
-        <SimpleInput v-model="capital" label="Capital" :decimal="true" />
-        <div class="d-flex align-items-center justify-content-center">
-            <button class="btn btn-dark btn-lg" type="submit" :disabled="!isFormValid()">Criar</button>
-        </div>
-    </form>
-</BaseModal>
+    <BaseModal class="new-plan-modal">
+        <button class="close invisible-button" @click="closeModal()"><i class="fa-solid fa-x text-white" @click="closeModal()"></i></button>
+        <form action="POST" @submit.prevent="handleSubmit()">
+            <SimpleInput v-model="title" label="Título" />
+            <DateInput v-model="startDate" label="Início" />
+            <DateInput v-model="finalDate" label="Fim" />
+            <SimpleInput v-model="capital" label="Capital" :decimal="true" />
+            <div class="d-flex align-items-center justify-content-center">
+                <button class="btn btn-dark btn-lg" type="submit" :disabled="!isFormValid()">Criar</button>
+            </div>
+        </form>
+    </BaseModal>
     
 </template>
 

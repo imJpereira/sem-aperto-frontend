@@ -13,10 +13,9 @@ const expensesService = {
                 }
             });
 
-            console.log(response);
             return response;
         } catch (e) {
-            console.error(e);
+            return e;
         }
     },
 
@@ -32,7 +31,7 @@ const expensesService = {
 
             return response;
         } catch (e) {
-            console.error(e);
+            return e;
         }
     },
 
@@ -48,7 +47,7 @@ const expensesService = {
 
             return response;
         } catch (e) {
-            console.error(e);
+            return e;
         }
     },
 
@@ -64,7 +63,7 @@ const expensesService = {
 
             return response.data;
         } catch (e) {
-            console.error(e);
+            return e;
         }
     },
 
@@ -80,7 +79,7 @@ const expensesService = {
 
             return response.data;
         } catch (e) {
-            console.error(e);
+            return e;
         }
     },
 }
