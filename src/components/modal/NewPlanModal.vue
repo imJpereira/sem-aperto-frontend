@@ -42,14 +42,14 @@ const createPlan = async () => {
 <template>
     
     <BaseModal class="new-plan-modal">
-        <button class="close invisible-button" @click="closeModal()"><i class="fa-solid fa-x text-white" @click="closeModal()"></i></button>
+        <button class="close invisible-button" @click="closeModal()"><i class="fa-solid fa-x text-black" @click="closeModal()"></i></button>
         <form action="POST" @submit.prevent="handleSubmit()">
             <SimpleInput v-model="title" label="Título" />
             <DateInput v-model="startDate" label="Início" />
             <DateInput v-model="finalDate" label="Fim" />
             <SimpleInput v-model="capital" label="Capital" :decimal="true" />
-            <div class="d-flex align-items-center justify-content-center">
-                <button class="btn btn-dark btn-lg" type="submit" :disabled="!isFormValid()">Criar</button>
+            <div class="w-100 d-flex justify-content-center">
+                <button class="w-100 btn btn-success btn-lg" type="submit" :disabled="!isFormValid()">Criar</button>
             </div>
         </form>
     </BaseModal>
@@ -57,11 +57,6 @@ const createPlan = async () => {
 </template>
 
 <style scoped>
-
-.new-plan-modal {
-        top: 40%;
-        left: 10%;
-    }
 
 form {
     gap: 1rem;

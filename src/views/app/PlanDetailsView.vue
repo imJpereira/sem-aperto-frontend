@@ -172,14 +172,14 @@ onUnmounted(() => {
 
     <div class="main-content">
       <section class="categories">
-        <div class="grid grid-header">
+        <div class="grid border-bottom pb-3">
           <p class="caption">Descrição</p>
           <p class="caption">Meta (R$)</p>
           <p class="caption">Valor Gasto (R$)</p>
           <p class="caption">Saldo (R$)</p>
         </div>
 
-        <div class="categories-grid">
+        <div class="grid-categories">
           <Category
             v-if="!isLoading"
             v-for="category in categories"
@@ -206,7 +206,7 @@ onUnmounted(() => {
       </section>
 
       <section class="category-expenses">
-        <div class="grid grid-header">
+        <div class="grid grid-expense border-bottom pb-3">
           <p class="caption">Descrição</p>
           <p class="caption">Data</p>
           <p class="caption">Valor</p>
@@ -224,6 +224,8 @@ onUnmounted(() => {
       </section>
     </div>
   </div>
+
+  <div :class="{ overlay: modalVisible }"></div>
   <NewCategoryModal
       v-if="modalVisible"
       ref="modal"
@@ -266,11 +268,6 @@ header {
   transition: transform 0.2s ease, color 0.2s ease;
 }
 
-.btn-back:hover {
-  transform: translateX(-3px);
-  color: #007bff;
-}
-
 .plan-title {
   font-size: 1.6rem;
   font-weight: 600;
@@ -296,10 +293,6 @@ header {
   cursor: pointer;
   font-weight: 500;
   transition: background 0.2s ease;
-}
-
-.btn-delete:hover {
-  background: #b02a37;
 }
 
 .plan-info-container {
@@ -339,21 +332,13 @@ header {
   padding: 1rem;
   border-radius: 12px;
   border: 1px solid #ececec;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.04);
 }
 
-.categories-grid {
+.grid-categories {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
-  margin-top: 0.5rem;
 }
 
-grid-header {
-  border-bottom: 1px solid #ececec;
-  font-weight: 600;
-  color: #666;
-}
 
 .grid-footer {
   border-top: 1px solid #ececec;
@@ -362,8 +347,8 @@ grid-header {
 
 .grid-expense {
   grid-template-columns: 2fr 1fr 1fr;
-  padding: 0.6rem 0;
-  border-bottom: 1px solid #ececec;
+  border-bottom: 1px solid #000;
+  padding: 0.3rem;
 }
 
 .category-expenses {
@@ -381,7 +366,7 @@ grid-header {
   font-weight: 500;
   padding: 0.5rem;
   border-radius: 8px;
-  transition: background-color 0.2s ease;
+  transition: all 0.2s ease;
 }
 
 .base-category:hover {

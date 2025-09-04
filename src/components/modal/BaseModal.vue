@@ -10,19 +10,25 @@
 <style scoped>
 
 .modal {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    position: absolute;
-    transform: translate(-50%, -50%);
-    height: 65vh;
-    width: 20%;
-    padding: 2.5rem;
-    border-radius: 10px;
-    color: var(--vt-c-text-dark-2);
-    background-color: #585858;
-    border: 1px solid #c4c4c4;
-    z-index: 1000;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: min(90%, 400px);
+  max-height: 70vh; 
+  padding: 2rem;
+  border-radius: 12px;
+  background-color: #fff;
+  color: #333;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3); 
+  overflow-y: auto;
+
+  z-index: 1000;
 }
+
 
 </style>

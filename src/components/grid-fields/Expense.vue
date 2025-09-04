@@ -42,7 +42,6 @@ const updateExpenseValue = async (expenseId, value) => {
 }
 
 const updateExpenseDate = async (expenseId, expenseDate) => {
-    // console.log(expenseDate, )
     if (expenseDate === props.expense.expenseDate) return;
 
     const response = await expensesService.updateExpense(expenseId, { expenseDate });
@@ -91,7 +90,7 @@ watch(() => props.expense, (newValue) => {
 </script>
 
 <template>
-    <div  class="grid grid-cell">
+    <div  class="grid grid-cell gap-2">
         <input 
           type="text"
           v-model="expenseDescription"
@@ -115,17 +114,5 @@ watch(() => props.expense, (newValue) => {
 </template>
 
 <style scoped>
-
-p, i {
-    padding: 0.3rem;
-}
-
-.grid input {
-    width: 100%;
-    border: none;
-    padding: 0.3rem;
-    background-color: transparent;
-    outline: none;
-}
 
 </style>

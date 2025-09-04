@@ -44,13 +44,7 @@ onUnmounted(() => {
 </script>
 
 <template>
-  
-  <NewExpenseModal 
-    v-if="modalVisible"
-    ref="modal" 
-    @close="handleModalClose" 
-  />
-  
+
   <header>
     <h1>Despesas</h1>
   </header>
@@ -76,6 +70,12 @@ onUnmounted(() => {
     />
   </section>
   
+  <div :class="{ overlay: modalVisible }"></div>
+  <NewExpenseModal 
+    v-if="modalVisible"
+    ref="modal" 
+    @close="handleModalClose" 
+  />
 </template>
 
 <style scoped>

@@ -55,11 +55,16 @@ const handlePlanBlur = async () => {
   categories.value = await categoryService.fetchAllCategoriesByPlan(expensePlan.value);
 }
 
+const isFormValid = () => {
+    return expensePlan.value && expenseDate.value && Number(expenseValue.value) > 0;
+};
+
+
 </script>
 
 <template>  
     <BaseModal class="new-expense-modal">
-        <button class="close invisible-button" @click="closeModal()"><i class="fa-solid fa-x text-white" @click="closeModal()"></i></button>
+        <button class="close invisible-button" @click="closeModal()"><i class="fa-solid fa-x text-black" @click="closeModal()"></i></button>
         <form @submit.prevent="handleSubmit">
             
             <DateInput v-model="expenseDate" label="Data" />
@@ -98,7 +103,7 @@ const handlePlanBlur = async () => {
             <SimpleInput v-model="expenseDescription" label="Descrição" />
 
             <div class="w-100 d-flex justify-content-center">
-                <button class="btn btn-success btn-lg" type="submit">Adicionar</button>
+                <button class="btn btn-success btn-lg" type="submit" :disabled="!isFormValid()">Adicionar</button>
             </div>
         </form>
     </BaseModal>
@@ -112,11 +117,6 @@ form :nth-child(3),
 form :nth-child(4),
 form :nth-child(5) {
     flex-basis: 100%;
-}
-
-.new-expense-modal {
-    top: 50%;
-    left: 50%;
 }
 
 </style>

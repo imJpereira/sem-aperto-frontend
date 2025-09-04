@@ -46,22 +46,18 @@ const createCategory = async () => {
 
 <template>
     <BaseModal class="new-category-modal">
-        <button class="close invisible-button" @click="closeModal()"><i class="fa-solid fa-x text-white" @click="closeModal()"></i></button>
+        <button class="close invisible-button" @click="closeModal()"><i class="fa-solid fa-x text-black" @click="closeModal()"></i></button>
         <form action="POST" @submit.prevent="handleSubmit()">
             <SimpleInput v-model="description" label="Descrição" />
             <SimpleInput v-model="targetValue" label="Meta" :decimal="true" />
-            <div class="d-flex align-items-center justify-content-center">
-                <button class="btn btn-dark btn-lg" type="submit" :disabled="!isFormValid()">Criar</button>
+            <div class="w-100 d-flex justify-content-center">
+                <button class="w-100 btn btn-success btn-lg" type="submit" :disabled="!isFormValid()">Criar</button>
             </div>
         </form>
     </BaseModal>
 </template>
 
 <style scoped>
-    .new-category-modal {
-        top: 40%;
-        left: 10%;
-    }
 
     form {
         gap: 1rem;

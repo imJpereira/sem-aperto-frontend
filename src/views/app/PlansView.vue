@@ -74,6 +74,7 @@ onUnmounted(() => {
 
   </section>
 
+  <div :class="{ overlay: modalVisible }"></div>
   <NewPlanModal v-if="modalVisible" ref="modal" @close="handleModalClose"/>
 </template>
 
@@ -105,6 +106,7 @@ onUnmounted(() => {
   flex-grow: 1;
   /* background-color: blue; */
 }
+
 
 
 </style>
