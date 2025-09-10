@@ -47,8 +47,6 @@ const updateCategoryTargetValue = async (categoryId, targetValue) => {
 
   const response = await categoryService.updateCategory(categoryId, { targetValue });
 
-  console.log("category component");
-
   emit("updated");
 
   if (response.status > 300 || response.status < 200) {

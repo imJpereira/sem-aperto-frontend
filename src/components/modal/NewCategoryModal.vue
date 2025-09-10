@@ -3,7 +3,7 @@ import { onMounted, ref } from 'vue';
 import BaseModal from './BaseModal.vue';
 import { useModal } from '@/composables/useModal';
 import categoryService from '@/services/categoryService';
-import { formatValue, removeDots } from '@/assets/functions/functions';
+import { formatValue, removeDots, replaceCommaWithDot } from '@/assets/functions/functions';
 import SimpleInput from '../inputs/SimpleInput.vue';
 
 const description = ref("");
@@ -20,7 +20,7 @@ const props = defineProps({
 });
 
 const isFormValid = () => {
-    return description.value && targetValue.value && Number(targetValue.value) > 0;
+    return description.value && Number(replaceCommaWithDot(targetValue.value)) > 0;
 };
 
 const handleSubmit = async() => {
@@ -30,11 +30,11 @@ const handleSubmit = async() => {
 
 const createCategory = async () => {
     if (description.value ==  "") return "Descrição Inválida";
-    if (targetValue.value <= 0 ) return "Valor inválido";
+    if (replaceCommaWithDot(targetValue.value) <= 0 ) return "Valor inválido";
 
     const response = await categoryService.createCategory(props.planId, {
         description: description.value,
-        targetValue: removeDots(targetValue.value),
+        targetValue: replaceCommaWithDot(targetValue.value),
         planId: props.planId
     });
 

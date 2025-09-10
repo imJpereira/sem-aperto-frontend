@@ -14,13 +14,11 @@ const modal = ref(null);
 const handleDocumentClick = (e) => {
   if (e.target.classList.contains('btn-success')) return;
 
-  console.log("handle document click");
   const modalElement = modal.value?.$el;
   if (!modalElement?.contains(e.target)) toggleVisibility(false);
 }
 
 const showPlanDetail = (plan) => {
-  console.log(plan);
   router.push({
                 name: "PlanDetail", 
                 params: { id: plan.planId }

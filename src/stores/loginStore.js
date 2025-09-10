@@ -28,8 +28,6 @@ export const useLoginStore = defineStore('login', () => {
     user.value.username = response.data.user.username;
     user.value.email = response.data.user.email;
     user.value.jsonWebToken = response.data.token;
-
-    console.log(user.value.jsonWebToken);
     return response;
   }
 

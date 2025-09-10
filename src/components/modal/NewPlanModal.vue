@@ -5,6 +5,7 @@ import { useModal } from '@/composables/useModal';
 import planService from '@/services/planService';
 import SimpleInput from '../inputs/SimpleInput.vue';
 import DateInput from '../inputs/DateInput.vue';
+import { removeDots, replaceCommaWithDot } from '@/assets/functions/functions';
 
 const emit = defineEmits(["close"]);
 const { closeModal } = useModal(emit);
@@ -14,7 +15,7 @@ const startDate = ref("");
 const finalDate = ref("");
 const capital = ref("");
 
-const isFormValid = () => title.value && startDate.value && finalDate.value && capital.value;
+const isFormValid = () => title.value && startDate.value && finalDate.value && replaceCommaWithDot(capital.value);
 
 const handleSubmit = async () => {
     alert(await createPlan()); 
@@ -32,7 +33,7 @@ const createPlan = async () => {
         title: title.value,
         startDate: startDate.value,
         finalDate: finalDate.value,
-        initialCapital: capital.value
+        initialCapital: replaceCommaWithDot(capital.value)
     });
 
     return (response.status >= 200) && (response.status < 300) ? "Plano criado com sucesso" : "Erro ao criar plano\n" + response.response.data;

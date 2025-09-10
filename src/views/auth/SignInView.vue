@@ -25,7 +25,6 @@ const handleSignIn = async () => {
             return;
         }
 
-        console.log("login store token: " + loginStore.user.jsonWebToken);
         if (loginStore.user.jsonWebToken) {
             router.push("/planos");
         } else {

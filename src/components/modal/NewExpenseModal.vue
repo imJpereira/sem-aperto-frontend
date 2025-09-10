@@ -7,6 +7,7 @@ import categoryService from '@/services/categoryService';
 import expensesService from '@/services/expensesService';
 import SimpleInput from '../inputs/SimpleInput.vue';
 import DateInput from '../inputs/DateInput.vue';
+import { removeDots, replaceCommaWithDot } from '@/assets/functions/functions';
 
 const planStore = usePlanStore();
 
@@ -32,7 +33,7 @@ const handleSubmit = async(event) => {
 const createExpense = async () => {
     let msg = '';
 
-    if (expenseValue.value <= 0 || isNaN(expenseValue.value)) msg += 'Informe um valor\n';
+    if (Number(replaceCommaWithDot(expenseValue.value)) <= 0 || isNaN(replaceCommaWithDot((expenseValue.value)))) msg += 'Informe um valor\n';
     if (!expensePlan.value) msg += 'Informe um plano\n';
 
     if (msg) {
@@ -43,7 +44,7 @@ const createExpense = async () => {
     const response = await expensesService.createExpense({
         plan: expensePlan.value,
         category: expenseCategory.value,
-        value: expenseValue.value,
+        value: replaceCommaWithDot(expenseValue.value),
         expenseDate: expenseDate.value,
         description: expenseDescription.value,
     });
@@ -56,7 +57,7 @@ const handlePlanBlur = async () => {
 }
 
 const isFormValid = () => {
-    return expensePlan.value && expenseDate.value && Number(expenseValue.value) > 0;
+    return expensePlan.value && expenseDate.value && Number(replaceCommaWithDot(expenseValue.value)) > 0;
 };
 
 

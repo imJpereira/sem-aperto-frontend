@@ -19,3 +19,7 @@ export const formatValue = (value) => {
 export const removeDots = (value) => {
   return value.replace(/\./g, '');
 }
+
+export const replaceCommaWithDot = (text) => {
+  return text.replace(/,/g, '.');
+}
